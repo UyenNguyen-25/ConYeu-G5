@@ -1,0 +1,235 @@
+import { useDispatch, useSelector } from "react-redux";
+import { QRCode, Space } from "antd";
+import React, { useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { MapPin, Trash2 } from "lucide-react";
+import {
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from "@/redux/features/cart/cartSlice";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Button, message, Popconfirm } from "antd";
+import AddAddress from "./AddAddress";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+const CartPage = () => {
+  const nav = useNavigate();
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [shippingAddress, setShippingAddress] = useState(null);
+  const [text, setText] = React.useState("https://ant.design/");
+  const cartItems = useSelector((state) => state.cart.items);
+  const dispatch = useDispatch();
+  const formatter = new Intl.NumberFormat("vi", {
+    style: "currency",
+    currency: "VND",
+  });
+  const temporaryTotal = cartItems.reduce(
+    (total, item) => total + item.product_price * item.quantity,
+    0
+  );
+
+  useEffect(() => {
+    const storedAddress = localStorage.getItem('shippingAddress');
+    console.log('storedAddress', storedAddress)
+    if (storedAddress) {
+        setShippingAddress(JSON.parse(storedAddress));
+    }
+}, []);
+
+  const handleDecrease = (productId) => {
+    dispatch(decreaseQuantity(productId));
+  };
+
+  const handleIncrease = (productId) => {
+    dispatch(increaseQuantity(productId));
+  };
+
+  const confirm = (productId) => {
+    console.log(productId);
+    dispatch(removeFromCart(productId));
+  };
+  const cancel = (e) => {
+    console.log(e);
+  };
+  return (
+    <div className=" py-9 px-24">
+      <h1 className="text-4xl font-semibold pb-10">Giỏ Hàng</h1>
+      {cartItems.length === 0 ? (
+        <div className="justify-center items-center flex flex-col">
+          <img src="dist/emptyCart.png" className="w-1/3 mx-auto -mt-10" />
+          <h1 className="text-xl font-semibold">Giỏ hàng hiện đang trống...</h1>
+          <button
+            className="text-base border border-transparent bg-[#E44918] hover:bg-[#d63e12] rounded-full text-white px-6 py-3 mt-6 transition duration-300 transform hover:scale-105 shadow-lg"
+            onClick={() => nav("/products?page=1&per_page=8")}
+          >
+            Tiếp tục mua sắm
+          </button>
+        </div>
+      ) : (
+        <div className="flex gap-6">
+          <div className="w-4/5 bg-white py-9 px-6 shadow-lg rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[300px] text-lg text-[#8B8B8B]">
+                    Sản phẩm
+                  </TableHead>
+                  <TableHead className="w-[100px] text-lg text-[#8B8B8B]">
+                    Đơn giá
+                  </TableHead>
+                  <TableHead className="w-[100px] text-lg text-[#8B8B8B]">
+                    Số lượng
+                  </TableHead>
+                  <TableHead className="w-[150px] text-lg text-[#8B8B8B]">
+                    Thành tiền
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {cartItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="flex">
+                      <img className="w-24" src={item.product_img} />
+                      <p className="w-full flex items-center font-medium text-base">
+                        {item.product_name}
+                      </p>
+                    </TableCell>
+                    <TableCell className="text-base font-semibold">
+                      {formatter.format(item.product_price)}
+                    </TableCell>
+                    {/* <TableCell className="text-lg">{item.quantity}</TableCell> */}
+                    <TableCell>
+                      <div className="flex gap-x-0">
+                        <button
+                          className="bg-[#E5E9EB] w-7 py-1 rounded-l-full font-bold"
+                          onClick={() => handleDecrease(item._id)}
+                        >
+                          <MinusOutlined />
+                        </button>
+                        <p className="bg-[#E5E9EB] text-center py-1 w-7 text-xl">
+                          {item.quantity}
+                        </p>
+                        <button
+                          className="bg-[#E5E9EB] w-7 py-1 rounded-r-full font-bold"
+                          onClick={() => handleIncrease(item._id)}
+                        >
+                          <PlusOutlined />
+                        </button>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-base font-semibold ">
+                      {formatter.format(item.product_price * item.quantity)}
+                      <Popconfirm
+                        className="ml-6"
+                        title="Delete the task"
+                        description="Are you sure to delete this item?"
+                        onConfirm={() => confirm(item._id)}
+                        onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button danger>Xóa</Button>
+                      </Popconfirm>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex flex-col gap-6 w-1/3">
+            <div className="rounded-lg bg-white p-6 shadow-lg">
+              {/* <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+              <div className="bg-orange-600 flex justify-center gap-3 p-3 text-white rounded-lg">
+                <MapPin />
+                <AddAddress />
+              </div> */}
+              {shippingAddress ? (
+                <>
+                    <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                    <div className=" flex justify-center gap-3 p-3 rounded-lg">
+                        <div>
+                            <p>{shippingAddress.name},</p>
+                            <p>{shippingAddress.phone},</p>
+                            <p>{shippingAddress.fullAddress}</p>
+                        </div>
+                    </div>
+                </>
+            ) : (
+              <>
+              <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+              <div className="bg-orange-600 flex justify-center gap-3 p-3 text-white rounded-lg">
+                <MapPin />
+                <AddAddress setShippingAddress={setShippingAddress} />
+              </div>
+              </>
+            )}
+            </div>
+            <div className="rounded-lg bg-white p-6 shadow-lg flex flex-col gap-2">
+              <p className="font-bold mb-2">Phương thức thanh toán</p>
+              <div>
+                <input
+                  type="checkbox"
+                  checked={paymentMethod === "cod"}
+                  onChange={() => setPaymentMethod("cod")}
+                />{" "}
+                <span>Thanh toán khi nhận hàng</span>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  checked={paymentMethod === "vnpay"}
+                  onChange={() => setPaymentMethod("vnpay")}
+                />{" "}
+                <span>Thanh toán qua VN Pay</span>
+              </div>
+              
+            </div>
+            <div className="rounded-lg bg-white p-6 shadow-lg">
+              <Table>
+                <TableBody className="text-lg">
+                  <TableRow>
+                    <TableCell className="text-[#8B8B8B]">Tính tạm</TableCell>
+                    <TableCell>{formatter.format(temporaryTotal)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="text-[#8B8B8B]">Tính tạm</TableCell>
+                    <TableCell>+{formatter.format(0)}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="text-[#8B8B8B]">Tổng tiền</TableCell>
+                    <TableCell>{formatter.format(temporaryTotal)}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+              <button className="bg-[#007AFB] hover:bg-blue-700 text-white rounded-lg w-full py-3 font-semibold mt-4">
+                TIẾP TỤC
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CartPage;
