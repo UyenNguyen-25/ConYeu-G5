@@ -1,0 +1,7 @@
+{
+  "watch": ["src/**"],
+  "exit": ".ts .js .json",
+  "execMap": {
+    "ts": "ts-node"
+  }
+}
