@@ -5,10 +5,11 @@ import verifyJWT from "../middleware/verifyJWT";
 const router = Router();
 
 const orderRoutes = router;
-router.route("/create-new-order").post(orderController.createOrder);
 
 router.use(verifyJWT);
 router.route("/auto-create-order-status").post(orderController.autoCreateStatus);
-router.route("/get-order-status").get(orderController.getOrderStatus);
+router.route("/update-order-status/:orderId").post(orderController.updateOrderStatus)
+router.route("/create-new-order").post(orderController.createOrder);
+router.route("/get-order-status").post(orderController.getOrderStatus);
 
 export default orderRoutes;

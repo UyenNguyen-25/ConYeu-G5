@@ -49,7 +49,7 @@ app.all("*", (req: Request, res: Response) => {
 
 app.use(errorHandler);
 
-export default app;
 app.listen(PORT, HOSTNAME, () => {
   console.log(`Server running on http://${HOSTNAME}:${PORT}`);
 });
+export default app;
