@@ -10,6 +10,9 @@ router
   .route("/get-product-by-id/:product_id")
   .get(productController.get_product_by_id);
 
+router.route("/get-product-status").get(productController.getProductStatus);
+
+
 router.use(verifyJWT);
 
 router.route("/create-product").post(productController.createNewProduct);
@@ -25,7 +28,6 @@ router
 router
   .route("/delete-product/:product_id")
   .delete(productController.delete_product);
-router.route("/get-product-status").get(productController.getProductStatus);
 
 const productRoutes = router;
 

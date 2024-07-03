@@ -44,7 +44,6 @@ const getOrderStatus : RequestHandler = asyncHandler(async (req: any, res: any):
 
 const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Promise<void> => {
     const { user_id,
-        total_money,
         order_items } = req.body;
 
         if (!user_id || !order_items || !Array.isArray(order_items)) {

@@ -31,6 +31,8 @@ import { Button, message, Popconfirm } from "antd";
 import AddAddress from "./AddAddress";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
+import { BASE_URL } from "@/constants/apiConfig";
 
 const CartPage = () => {
   const nav = useNavigate();
@@ -70,6 +72,20 @@ const CartPage = () => {
   };
   const cancel = (e) => {
     console.log(e);
+  };
+
+  const handlePayment = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/momo/payment`);
+
+      if (response.data && response.data.payUrl) {
+        window.location.href = response.data.payUrl;
+      } else {
+        console.error('Thanh toán MoMo không thành công:', response.data);
+      }
+    } catch (error) {
+      console.error('Lỗi khi xử lý thanh toán:', error);
+    }
   };
   return (
     <div className=" py-9 px-24">
@@ -221,7 +237,7 @@ const CartPage = () => {
                   </TableRow>
                 </TableBody>
               </Table>
-              <button className="bg-[#007AFB] hover:bg-blue-700 text-white rounded-lg w-full py-3 font-semibold mt-4">
+              <button className="bg-[#007AFB] hover:bg-blue-700 text-white rounded-lg w-full py-3 font-semibold mt-4" onClick={handlePayment}>
                 TIẾP TỤC
               </button>
             </div>
