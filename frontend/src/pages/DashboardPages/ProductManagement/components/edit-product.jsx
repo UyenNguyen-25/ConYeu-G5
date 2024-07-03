@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
@@ -18,6 +19,7 @@ const EditProduct = ({
   setFilteredData,
   filteredData,
 }) => {
+  const token = useSelector((state) => state.auth.token);
   const [productStatus, setProductStatus] = useState([]);
   const [brands, setBrands] = useState([]);
   const [postImage, setPostImage] = useState({
@@ -64,7 +66,12 @@ const EditProduct = ({
     console.log("Form data for update:", formData);
     const response = await axios.put(
       `${BASE_URL}/api/product/update-product/${product._id}`,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
     console.log("API response:", response.data);
     setFilteredData((prevData) =>

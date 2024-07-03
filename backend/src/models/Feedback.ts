@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const FeedbackSchema = new mongoose.Schema(
   {
     order_items_id: {
-      type: mongoose.Schema.Types.Number,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "OrderItem",
       required: true,
     },

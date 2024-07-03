@@ -46,9 +46,11 @@ const getOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any): 
 
 const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Promise<void> => {
     const { user_id,
+  updateOrderStatus,
         total_money,
         order_items,
         order_status_id } = req.body;
+
 
     if (!user_id || !order_items || !Array.isArray(order_items)) {
         return res.status(400).json({ message: 'Invalid input data' });

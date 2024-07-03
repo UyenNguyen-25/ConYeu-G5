@@ -5,10 +5,12 @@ import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
 const AddProduct = ({ setFilteredData }) => {
+  const token = useSelector((state) => state.auth.token);
   const [productStatus, setProductStatus] = useState([]);
   const [brands, setBrands] = useState([]);
   const [postImage, setPostImage] = useState({
@@ -53,18 +55,29 @@ const AddProduct = ({ setFilteredData }) => {
       product_img: postImage.base64String,
     };
     console.log("form data", formData);
-    const response = await axios.post(
-      `${BASE_URL}/api/product/create-product`,
-      formData
-    );
-    console.log("API response:", response);
-    // message.success('Product created successfully!');
-    // console.log('Form data:', formData);
-    setFilteredData((prevData) => [...prevData, response.data.data]);
-    toast.success("Thêm vào giỏ hàng thành công!", {
-      position: "top-right",
-    });
-    handleCancel();
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/product/create-product`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log("API response:", response);
+      // message.success('Product created successfully!');
+      // console.log('Form data:', formData);
+      setFilteredData((prevData) => [...prevData, response.data.data]);
+      toast.success("Thêm vào giỏ hàng thành công!", {
+        position: "top-right",
+      });
+      handleCancel();
+    } catch (error) {
+      console.log(error);
+      res.status(500).json("Internal server error")
+    }
+    
   };
 
   const [isModalVisible, setIsModalVisible] = React.useState(false);
