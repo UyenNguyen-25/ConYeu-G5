@@ -1,19 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import Logo from "@/assets/logo";
 import Footer from "@/components/layouts/DefaultLayout/Footer";
-import { routes } from "@/routes";
+// import { routes } from "@/routes";
 import { Typography } from "antd";
 import { Header } from "antd/es/layout/layout";
 import { ArrowLeft } from "lucide-react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const AnonymousLayout = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-
-  const subRouter = routes
-    .find((e) => e.path === "")
-    .routes.find((e) => location.pathname.includes(e.path));
 
   return (
     <div className="flex min-h-screen flex-col items-stretch">
@@ -22,11 +17,11 @@ const AnonymousLayout = () => {
         <div className="w-full h-full flex items-center justify-between font-mono font-semibold">
           <div className="flex items-center gap-6">
             {Logo()}
-            {subRouter?.title && (
+            {/* {subRouter?.title && (
               <>
                 <div>|</div> {subRouter.title}
               </>
-            )}
+            )} */}
           </div>
           <Typography.Link
             className="flex items-center gap-2 text-lg"

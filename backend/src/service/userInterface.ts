@@ -9,7 +9,7 @@ export interface UserInterface {
   user_role: "admin" | "manager" | "staff";
   address: string;
   default: boolean;
-  user_status: 0 | 1;
+  user_status: boolean;
 }
 
 export interface UserAddressInterface {

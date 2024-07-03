@@ -1,10 +1,8 @@
-function ErrorBoundary() {
-  return (
-    <div className="flex flex-col items-center h-full text-2xl font-semibold my-8">
-      <p>Oops!</p>
-      <p>Page Not Found</p>
-    </div>
-  );
-}
+import { useRouteError } from "react-router-dom";
 
-export default ErrorBoundary;
+export default function ErrorBoundary() {
+  let error = useRouteError();
+  console.error(error);
+  // Uncaught ReferenceError: path is not defined
+  return <div className="text-2xl font-bold">Something is wrong</div>;
+}

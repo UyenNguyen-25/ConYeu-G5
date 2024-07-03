@@ -3,7 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://con-yeu-g5.vercel.app",
+  // baseUrl: "https://con-yeu-g5.vercel.app",
+  baseUrl: "http://localhost:2535",
   credentials: "include",
   mode: "cors",
   prepareHeaders: (headers, { getState }) => {

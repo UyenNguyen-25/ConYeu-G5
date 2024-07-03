@@ -5,6 +5,7 @@ import Pagination from "./components/Pagination";
 import usePagination from "./util/usePagination";
 import { BASE_URL } from "@/constants/apiConfig";
 import axios from "axios";
+import { Skeleton } from "antd";
 
 export default function ProductsPage() {
   const [product, setProduct] = useState([]);
@@ -21,13 +22,15 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/product/get-all-product`);
-        console.log('response', response.data)
+        const response = await axios.get(
+          `${BASE_URL}/api/product/get-all-product`
+        );
+        console.log("response", response.data);
         if (!response) {
           throw new Error("Network response was not ok");
         }
         const productsData = await response.data;
-        console.log('responseeeeee', productsData)
+        console.log("responseeeeee", productsData);
         setProduct(productsData);
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
@@ -36,7 +39,7 @@ export default function ProductsPage() {
 
     fetchProducts();
   }, []);
-  console.log('product index', product)
+  console.log("product index", product);
 
   const handleFilterChange = (filterType, value) => {
     console.log("first");
@@ -51,7 +54,10 @@ export default function ProductsPage() {
   useEffect(() => {
     // console.log('filter thay đổi', filters)
     const filteredProducts = product.filter((item) => {
-      if (filters.brand.length > 0 && !filters.brand.includes(item.product_brand_id.brand_name)) {
+      if (
+        filters.brand.length > 0 &&
+        !filters.brand.includes(item.product_brand_id.brand_name)
+      ) {
         return false;
       }
 
@@ -64,9 +70,9 @@ export default function ProductsPage() {
     if (sort) {
       filteredProducts.sort((a, b) => {
         if (sort === "lowToHigh") {
-          return a.product_price  - b.product_price ;
+          return a.product_price - b.product_price;
         } else if (sort === "highToLow") {
-          return b.product_price  - a.product_price ;
+          return b.product_price - a.product_price;
         }
         return 0;
       });
@@ -113,8 +119,18 @@ export default function ProductsPage() {
             </button>
           </div>
         </div>
-        <ProductList product={paginatedItems} />
-        <Pagination hasNextPage={hasNextPage} hasPrevPage={hasPrevPage} product={displayedProducts.length}/>
+        {product.length > 0 ? (
+          <>
+            <ProductList product={paginatedItems} />
+            <Pagination
+              hasNextPage={hasNextPage}
+              hasPrevPage={hasPrevPage}
+              product={displayedProducts.length}
+            />
+          </>
+        ) : (
+          <Skeleton />
+        )}
       </div>
     </div>
   );

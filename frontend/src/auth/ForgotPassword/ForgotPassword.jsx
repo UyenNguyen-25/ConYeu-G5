@@ -1,20 +1,12 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
-import { setCredentials } from "@/redux/features/auth/authSlice";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import OtpForm from "../components/otp-form";
 import { useCheckPhoneExistedMutation } from "@/redux/features/users/usersApiSlice";
-import auth from "../firebase/setup";
-import { signInWithPhoneNumber } from "firebase/auth";
 
 const ForgotPassword = () => {
   // eslint-disable-next-line no-unused-vars
   const [field, setField] = useState();
-  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [registerInfo, setRegisterInfo] = useState();
   const [checkPhoneExisted, { isLoading, isError, isSuccess, error }] =

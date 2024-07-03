@@ -1,8 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  useAddNewUserMutation,
-  useForgotPasswordMutation,
-} from "@/redux/features/users/usersApiSlice";
 import { Button, Flex, Form, Typography } from "antd";
 import { useForm } from "antd/es/form/Form";
 import FormItem from "antd/es/form/FormItem";
@@ -13,12 +9,16 @@ import { signInWithPhoneNumber } from "firebase/auth";
 import auth from "../firebase/setup";
 import { Otptimer } from "otp-timer-ts";
 import { toast } from "sonner";
+import {
+  useForgotPasswordMutation,
+  useSignupMutation,
+} from "@/redux/features/auth/authApiSlice";
 
 function OtpForm(props) {
   const { registerInfo, message, path } = props;
   const [form] = useForm();
   const [otp, setOtp] = useState("");
-  const [addNewUser] = useAddNewUserMutation();
+  const [signup] = useSignupMutation();
   const [forgotPassword] = useForgotPasswordMutation();
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -38,10 +38,6 @@ function OtpForm(props) {
       .catch((err) => console.log(err));
   };
 
-  useEffect(() => {
-    sendOtp();
-  }, []);
-
   const onFinish = async () => {
     window.confirmationResult
       .confirm(otp)
@@ -49,7 +45,7 @@ function OtpForm(props) {
         console.log(confirmationResult);
         try {
           path.includes("register")
-            ? await addNewUser(registerInfo).unwrap()
+            ? await signup(registerInfo).unwrap()
             : await forgotPassword(registerInfo).unwrap();
           setIsSuccess(true);
         } catch (error) {
