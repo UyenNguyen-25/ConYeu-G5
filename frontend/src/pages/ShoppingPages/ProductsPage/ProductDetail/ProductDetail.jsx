@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import ProductReviews from "../components/ProductReview";
 
 const ProductDetail = () => {
   const { id } = useParams();
