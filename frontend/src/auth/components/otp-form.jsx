@@ -10,7 +10,6 @@ import auth from "../firebase/setup";
 import { Otptimer } from "otp-timer-ts";
 import { toast } from "sonner";
 import {
-  useForgotPasswordMutation,
   useSignupMutation,
 } from "@/redux/features/auth/authApiSlice";
 
@@ -19,7 +18,6 @@ function OtpForm(props) {
   const [form] = useForm();
   const [otp, setOtp] = useState("");
   const [signup] = useSignupMutation();
-  const [forgotPassword] = useForgotPasswordMutation();
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -31,22 +29,21 @@ function OtpForm(props) {
 
     await signInWithPhoneNumber(auth, user_phoneNumber, appVerifier)
       .then((confirmation) => {
-        console.log(confirmation);
+        // console.log(confirmation);
         window.confirmationResult = confirmation;
         toast.success("Mã OTP đang được gửi tới số điện thoại");
       })
       .catch((err) => console.log(err));
-  };
+  }
 
   const onFinish = async () => {
+    setIsSuccess(true);
     window.confirmationResult
       .confirm(otp)
-      .then(async (confirmationResult) => {
-        console.log(confirmationResult);
+      .then(async () => {
         try {
           path.includes("register")
-            ? await signup(registerInfo).unwrap()
-            : await forgotPassword(registerInfo).unwrap();
+            && await signup(registerInfo).unwrap()
           setIsSuccess(true);
         } catch (error) {
           console.log(error);
@@ -61,13 +58,23 @@ function OtpForm(props) {
   };
 
   useEffect(() => {
+    sendOtp()
+  }, [])
+
+  useEffect(() => {
     if (errorMessage.length > 0) {
       toast.error("Đã xảy ra lỗi");
     }
-    if (isSuccess === true) {
+    if (isSuccess === true && path.includes("register")) {
       toast.success(message);
       setTimeout(() => {
         navigate("/login");
+      }, 2000);
+    } else if (isSuccess === true && !path.includes("register")) {
+      console.log(registerInfo);
+      toast.success(message);
+      setTimeout(() => {
+        navigate("/set-new-password", { state: registerInfo });
       }, 2000);
     }
   }, [isSuccess, errorMessage, navigate]);

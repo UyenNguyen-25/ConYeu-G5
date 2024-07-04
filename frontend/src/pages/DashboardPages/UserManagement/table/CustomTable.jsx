@@ -1,4 +1,4 @@
-import { useUpdateUserMutation } from "@/redux/features/users/usersApiSlice";
+import { useDeleteUserMutation, useUpdateUserMutation } from "@/redux/features/users/usersApiSlice";
 import { Form, Input, Popconfirm, Select, Table, Tag, Typography } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { format } from "date-fns";
@@ -102,7 +102,8 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
     },
     total: list?.length,
   });
-  const [updateUser, { isError, error, isSuccess }] = useUpdateUserMutation()
+  const [updateUser, { isError: isUpdateError, error: updateMsg, isSuccess: isUpdateSuccess }] = useUpdateUserMutation()
+  const [deleteUser, { isError: isDeleteError, error: deleteMsg, isSuccess: isDeleteSuccess }] = useDeleteUserMutation()
 
   //edit
   const [editingKey, setEditingKey] = useState("");
@@ -116,9 +117,8 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
     setEditingKey(record._id);
   };
 
-  const handleDelete = (key) => {
-    const newData = data.filter((item) => item.key !== key);
-    setData(newData);
+  const handleDelete = async (key) => {
+    await deleteUser({ user_id: key }).unwrap()
   };
 
   const cancel = () => {
@@ -128,9 +128,8 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
   const save = async (key) => {
     try {
       const row = await form.validateFields();
-      const newData = { ...row, user_status: row.user_status === "true", user_id: key };
-      console.log(newData);
-      await updateUser(newData).unwrap()
+      const updateData = { ...row, user_status: row.user_status === "true", user_id: key };
+      await updateUser(updateData).unwrap()
       setEditingKey("")
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
@@ -142,12 +141,16 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
   }, [list]);
 
   useEffect(() => {
-    if (isError) {
-      toast.error(error.data.message)
-    } else if (isSuccess) {
+    if (isUpdateError) {
+      toast.error(updateMsg.data.message)
+    } else if (isUpdateSuccess) {
       toast.success("Update successfully")
+    } else if (isDeleteError) {
+      toast.error(deleteMsg.data.message)
+    } else if (isDeleteSuccess) {
+      toast.success("Delete successfully")
     }
-  }, [isError, error, isSuccess])
+  }, [deleteMsg, isDeleteError, isDeleteSuccess, isUpdateError, isUpdateSuccess, updateMsg])
 
   const columns = [
     {
@@ -174,7 +177,7 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
       title: "Role",
       dataIndex: "user_role",
       render: (value) => value?.toUpperCase(),
-      editable: true,
+      editable: employeeBtn,
     },
     {
       title: "Status",
@@ -234,8 +237,8 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
               Edit
             </Typography.Link>
 
-            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-              <a className="text-red-500">Delete</a>
+            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)} >
+              <Typography.Link type="danger" disabled={editingKey !== ""}>Delete</Typography.Link>
             </Popconfirm>
           </>
         );

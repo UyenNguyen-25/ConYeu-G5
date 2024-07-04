@@ -120,7 +120,7 @@ const forgotPassword: RequestHandler = asyncHandler(
     }).exec();
 
     if (!foundPhone) {
-      return res.json({ message: "phoneNumber doesn't existed" });
+      return res.status(400).json({ message: "phoneNumber doesn't existed" });
     }
 
     if (user_password && user_password.length > 0) {

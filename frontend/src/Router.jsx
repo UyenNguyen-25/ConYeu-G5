@@ -22,12 +22,15 @@ import ErrorBoundary from "./components/common/Error";
 import ProductsPage from "./pages/ShoppingPages/ProductsPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { UserLoader } from "./routes/userRoute";
+import SetNewPassword from "./auth/ForgotPassword/SetNewPassword";
+import Profile from "./pages/ProfillePages";
+import ResetToken from "./routes/ResetRoute/index.";
+import CheckPermissionRoute from "./routes/CheckPermission";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <ErrorBoundary />,
     children: [
       {
         element: (
@@ -72,10 +75,19 @@ const router = createBrowserRouter([
             path: "contact",
             element: <ContactPage />,
           },
+          {
+            path: "profile",
+            element: <Profile />,
+          },
         ],
       },
       {
-        element: <AnonymousLayout />,
+        element: (
+          <ResetToken>
+            <AnonymousLayout />
+          </ResetToken>
+        ),
+        errorElement: <ErrorBoundary />,
         children: [
           {
             path: "login",
@@ -89,14 +101,21 @@ const router = createBrowserRouter([
             path: "forgot-password",
             element: <ForgotPassword />,
           },
+          {
+            path: "set-new-password",
+            element: <SetNewPassword />,
+          },
         ],
       },
       {
         element: (
           <ProtectedRoute>
-            <DashboardLayout />
+            <CheckPermissionRoute>
+              <DashboardLayout />
+            </CheckPermissionRoute>
           </ProtectedRoute>
         ),
+        errorElement: <ErrorBoundary />,
         path: "dashboard",
         children: [
           {

@@ -18,8 +18,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          console.log(data);
+          await queryFulfilled;
           dispatch(logOut());
           setTimeout(() => {
             dispatch(apiSlice.util.resetApiState());
@@ -55,12 +54,11 @@ export const authApiSlice = apiSlice.injectEndpoints({
       },
     }),
     forgotPassword: builder.mutation({
-      query: ({ user_phoneNumber, user_password }) => ({
+      query: (initialUserData) => ({
         url: `${AUTH_URL}/forgot-password`,
         method: "PUT",
         body: {
-          user_phoneNumber,
-          user_password,
+          ...initialUserData
         },
       }),
     }),

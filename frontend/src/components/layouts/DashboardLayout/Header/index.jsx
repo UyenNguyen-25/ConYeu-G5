@@ -14,7 +14,7 @@ function Navbar() {
   const itemsProps = [
     {
       label: "Hồ sơ",
-      key: "/",
+      key: "/profile",
       icon: <User />,
     },
     {

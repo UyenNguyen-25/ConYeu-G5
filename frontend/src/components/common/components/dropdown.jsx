@@ -27,7 +27,7 @@ const DropdownCustomize = (props) => {
     if (e.key === "/login") {
       await sendLogout();
       toast.success("Đăng xuất thành công");
-      navigate("login");
+      navigate("/login");
     } else navigate(e.key);
   };
 

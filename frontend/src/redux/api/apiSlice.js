@@ -4,7 +4,7 @@ import { setCredentials } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
   // baseUrl: "https://con-yeu-g5.vercel.app",
-  baseUrl: "http://localhost:2535",
+  baseUrl: "http://localhost:5000",
   credentials: "include",
   mode: "cors",
   prepareHeaders: (headers, { getState }) => {
