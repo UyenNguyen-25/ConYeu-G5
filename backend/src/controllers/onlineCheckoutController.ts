@@ -6,6 +6,7 @@ import cryptoJS from 'crypto-js';
 import moment from 'moment';
 import uuid from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
+import Payment from '../models/Payment';
 
 const createPayment: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
     try {
@@ -18,8 +19,9 @@ const createPayment: RequestHandler = asyncHandler(async (req: any, res: any): P
         var redirectUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c60';
         var ipnUrl = 'https://730d-115-73-131-38.ngrok-free.app/api/momo/callback';
         var requestType = "captureWallet";
-        var amount = '50000';
-        var orderId = partnerCode + new Date().getTime();
+        var amount = '5000';
+        // var orderId = partnerCode + new Date().getTime();
+        var orderId = "6685514a38f22c357f98813d"
         var requestId = orderId;
         var extraData = '';
         var paymentCode = 'T8Qii53fAXyUftPV3m9ysyRhEanUs9KlOPfHgpMR0ON50U10Bh+vZdpJU7VY4z+Z2y77fJHkoDc69scwwzLuW5MzeUKTwPo3ZMaB29imm6YulqnWfTkgzqRaion+EuD7FN9wZ4aXE1+mRt0gHsU193y+yxtRgpmY7SDMU9hCKoQtYyHsfFR5FUAOAKMdw2fzQqpToei3rnaYvZuYaxolprm9+/+WIETnPUDlxCYOiw7vPeaaYQQH0BF0TxyU3zu36ODx980rJvPAgtJzH1gUrlxcSS1HQeQ9ZaVM1eOK/jl8KJm6ijOwErHGbgf/hVymUQG65rHU2MWz9U8QUjvDWA==';
@@ -84,9 +86,36 @@ const createPayment: RequestHandler = asyncHandler(async (req: any, res: any): P
     }
 });
 
+
+//create and save payment with MOMO
 const callback: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
     console.log('call back', req.body)
-    return res.status(200).json(req.body)
+    try {
+        const checkPaymentStatus = req.body.resultCode;
+        let status;
+        if (checkPaymentStatus === 0) {
+            status = "Paid";
+        } else {
+            status = "UnPaid";
+            
+            return;
+        }
+        //check thanh toan fail xoa order 
+        //find orderId, ko có thì trả về
+        
+
+        let paymentMomo = new Payment({
+            order_id: req.body.orderId,
+            payment_method: req.body.partnerCode,
+            payment_status: status,
+        })
+        console.log(paymentMomo);
+        await paymentMomo.save();
+        return res.status(200).json(req.body)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json('Internal server error.')
+    }
 })
 
 

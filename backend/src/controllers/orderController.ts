@@ -5,6 +5,7 @@ import Order from '../models/Order';
 import OrderItem from '../models/OrderItem';
 import { error } from 'console';
 import mongoose from 'mongoose';
+import Payment from '../models/Payment';
 
 const autoCreateStatus: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
 
@@ -46,10 +47,11 @@ const getOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any): 
 
 const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Promise<void> => {
     const { user_id,
-  updateOrderStatus,
+        updateOrderStatus,
         total_money,
         order_items,
-        order_status_id } = req.body;
+        order_status_id,
+        payment_method } = req.body;
 
 
     if (!user_id || !order_items || !Array.isArray(order_items)) {
@@ -75,7 +77,7 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
             const totalPrice = product.product_price * orderItem.quantity;
             return totalPrice;
         } else {
-            console.log("aushit");
+            console.log("error");
             throw new Error(`OrderItem with id ${orderItemId} not found or Product not populated`);
         }
     }));
@@ -91,10 +93,17 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
         order_status_id
     })
 
-    order = await order.save();
+    await order.save();
 
-    // await order.updateOne({}, {}).set("order_items", orderItems);
-    // order.save();
+    //create payment with COD
+    if (payment_method.toUpperCase() === "COD") {
+        let newPayment = new Payment({
+            order_id: order._id
+        })
+        await newPayment.save();
+
+    }
+
     if (!order)
         return res.status(400).send('the order cannot be created!')
     res.send(order);
@@ -114,12 +123,12 @@ const updateOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any
         } else {
             //get order status id
             const idordertatus = orderstatus._id;
-             await Order.findByIdAndUpdate(
+            await Order.findByIdAndUpdate(
                 orderId,
                 { order_status_id: idordertatus }
             );
-            const updateOrderStatus = await Order.findOne({_id : orderId}).populate('order_status_id')
-            res.status(200).json({ message: "Update order status susscessfull"});
+            const updateOrderStatus = await Order.findOne({ _id: orderId }).populate('order_status_id')
+            res.status(200).json({ message: "Update order status susscessfull" });
             console.log(updateOrderStatus);
             console.log(orderstatus);
             console.log(idordertatus);
