@@ -5,12 +5,16 @@ const ProductList = ({ product }) => {
     style: "currency",
     currency: "VND",
   });
-  console.log('product list', product)
+  console.log("product list", product);
   return (
     <div className="grid grid-cols-4 gap-4 mt-4">
       {product?.map((item, index) => (
         <div key={index} className="bg-white shadow-2xl rounded-xl">
-          <img className="w-2/3 m-auto my-8" src={item.product_img} alt={item.product_name} />
+          <img
+            className="w-2/3 m-auto my-8"
+            src={item.product_img}
+            alt={item.product_name}
+          />
           <div className="px-6">
             <Link
               to={`/products/${item._id}`}
@@ -24,11 +28,15 @@ const ProductList = ({ product }) => {
               </p>
               <p className="my-4 line-through text-xs">
                 {formatter.format(
-                  Math.floor(item.product_price / (1 - item.product_price_discount / 100))
+                  Math.floor(
+                    item.product_price / (1 - item.product_price_discount / 100)
+                  )
                 )}
               </p>
               <div className="flex flex-grow"></div>
-              <p className="font-bold my-4 text-[#E44918]">-{item.product_price_discount}%</p>
+              <p className="font-bold my-4 text-[#E44918]">
+                -{item.product_price_discount}%
+              </p>
             </div>
           </div>
         </div>

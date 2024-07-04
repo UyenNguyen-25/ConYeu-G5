@@ -109,8 +109,8 @@ function Register() {
               message: "Mời ba mẹ nhập mật khẩu",
             },
             {
-              min: 8,
-              message: "Mật khẩu có độ dài ít nhất là 8 ký tự",
+              min: 6,
+              message: "Mật khẩu có độ dài ít nhất là 6 ký tự",
             },
             {
               pattern: /[a-z]/g,

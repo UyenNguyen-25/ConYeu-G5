@@ -1,10 +1,13 @@
 /* eslint-disable react/jsx-key */
 // import React from "react";
-import { useEffect } from "react";
-import { Routes } from "./routes";
+import { Suspense, useEffect } from "react";
 import { Toaster } from "sonner";
 import { RecaptchaVerifier } from "firebase/auth";
 import auth from "./auth/firebase/setup";
+import { Outlet } from "react-router-dom";
+import { Skeleton } from "antd";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 function App() {
   useEffect(() => {
@@ -17,7 +20,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <Provider store={store}>
       <Toaster
         theme="light"
         position="top-right"
@@ -25,8 +28,10 @@ function App() {
         toastOptions={{ duration: 1000 }}
       />
       <div id="recaptcha"></div>
-      <Routes />
-    </>
+      <Suspense fallback={<Skeleton />}>
+        <Outlet />
+      </Suspense>
+    </Provider>
   );
 }
 

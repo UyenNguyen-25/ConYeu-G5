@@ -1,15 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Table,
-  Button,
-  Input,
-  Modal,
-  Form,
-  Radio,
-  Select,
-  message,
-  Upload,
-} from "antd";
+import { Button, Input, Form, Select } from "antd";
 import {
   SearchOutlined,
   FilterOutlined,
@@ -37,11 +27,13 @@ const ProductManagement = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/product/get-all-product`);
+        const response = await axios.get(
+          `${BASE_URL}/api/product/get-all-product`
+        );
         setData(response.data);
         setFilteredData(response.data);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
       }
     };
 
@@ -59,7 +51,7 @@ const ProductManagement = () => {
 
   const handleFilter = (values) => {
     const { product_age, category } = values;
-    console.log(values)
+    console.log(values);
     let filtered = data;
     if (product_age) {
       filtered = filtered.filter((item) => item.product_age === product_age);
@@ -69,7 +61,7 @@ const ProductManagement = () => {
     }
     setFilteredData(filtered);
   };
-  console.log('filtered', filteredData)
+  console.log("filtered", filteredData);
 
   const handleSearch = (value) => {
     const searchValue = value.toLowerCase();

@@ -31,18 +31,18 @@ function Header() {
   const itemsProps = [
     {
       label: "Hồ sơ",
-      key: "/",
+      key: "/profile",
       icon: <User />,
     },
     {
       label: "Dashboard",
-      key: "/dashboard",
+      key: "dashboard",
       icon: <ArrowRightLeft />,
       permission: ["admin", "staff", "manager"],
     },
     {
       label: "Đơn mua",
-      key: "/purchase",
+      key: "purchase",
       icon: <ReceiptText />,
     },
     {

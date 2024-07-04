@@ -6,10 +6,10 @@ const router: Router = Router();
 
 router.post("/", userController.createNewUser);
 router.post("/check-phone-existed", userController.checkPhoneExisted);
-router.put("/forgot-password", userController.forgotPassword);
+router.put("/change-password", userController.changePassword);
 
 router
-  .use(verifyJWT)
+  // .use(verifyJWT)
   .route("/")
   .get(userController.getAllUsers)
   .put(userController.updateUser)

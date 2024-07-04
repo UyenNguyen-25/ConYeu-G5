@@ -8,12 +8,30 @@ import UserAddress from "../models/UserAddress";
 
 const getAllUsers: RequestHandler = asyncHandler(
   async (req, res): Promise<any> => {
-    const users = await User.find({})
+    const search = req.query.search || "";
+    const role = req.query.role || "";
+
+    const query: any = {
+      user_phoneNumber: { $regex: search, $options: "i" },
+    };
+
+    const foundRole = await UserRole.findOne({
+      role_description: "customer",
+    });
+
+    if (foundRole && role !== "customer") {
+      query.user_role = { $ne: foundRole._id };
+    } else if (foundRole && role === "customer") {
+      query.user_role = foundRole._id;
+    }
+
+    const users = await User.find(query)
       .populate("user_role", "role_description -_id")
       .populate("address_id", "-_id")
       .lean();
+
     if (!users?.length) {
-      return res.status(400).json({ message: "No users found" });
+      return res.status(404).json({ message: "No users found" });
     }
     res.status(200).json(users);
   }
@@ -43,7 +61,7 @@ const createNewUser: RequestHandler = asyncHandler(
     const hashedPwd = await bcrypt.hash(requestUser.user_password, 10);
 
     //relationship
-    const roles = await UserRole.find({}).lean(); 
+    const roles = await UserRole.find({}).lean();
     if (!roles) {
       const newRoles = [
         { role_description: "admin" },
@@ -118,7 +136,7 @@ const updateUser: RequestHandler = asyncHandler(
 
     //relationship role
     const role = await UserRole.findOne({
-      role_description: requestUser.user_role,
+      role_description: requestUser.user_role.toLocaleLowerCase(),
     });
 
     //relationship address
@@ -152,7 +170,7 @@ const updateUser: RequestHandler = asyncHandler(
       requestUser.user_phoneNumber || user.user_phoneNumber),
       (user.user_fullname = requestUser.user_fullname || user.user_fullname),
       (user.user_email = requestUser.user_email || user.user_email),
-      (user.user_status = requestUser.user_status === 0 ? false : true),
+      (user.user_status = requestUser.user_status),
       await user.updateOne({}, {}).set("user_role", role?._id);
     await user.save();
 
@@ -264,7 +282,7 @@ const checkPhoneExisted: RequestHandler = asyncHandler(
   }
 );
 
-const forgotPassword: RequestHandler = asyncHandler(
+const changePassword: RequestHandler = asyncHandler(
   async (req, res): Promise<any> => {
     const { user_phoneNumber, user_password } = req.body;
 
@@ -300,7 +318,7 @@ const userController = {
   deleteUser,
   confirmUserAddress,
   checkPhoneExisted,
-  forgotPassword,
+  changePassword,
 };
 
 export default userController;

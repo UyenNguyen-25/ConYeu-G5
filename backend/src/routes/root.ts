@@ -15,7 +15,7 @@ router.get("^/$|/app(.html)?", (req: Request, res: Response) => {
 
 router.use("/auth", authRoutes);
 
-router.use("/api/users", userRoutes);
+router.use("/api/user", userRoutes);
 
 router.use("/api/product", productRoutes);
 

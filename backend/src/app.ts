@@ -52,4 +52,5 @@ app.use(errorHandler);
 app.listen(PORT, HOSTNAME, () => {
   console.log(`Server running on http://${HOSTNAME}:${PORT}`);
 });
+
 export default app;

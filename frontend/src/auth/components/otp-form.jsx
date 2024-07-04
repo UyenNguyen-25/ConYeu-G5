@@ -1,8 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  useAddNewUserMutation,
-  useForgotPasswordMutation,
-} from "@/redux/features/users/usersApiSlice";
 import { Button, Flex, Form, Typography } from "antd";
 import { useForm } from "antd/es/form/Form";
 import FormItem from "antd/es/form/FormItem";
@@ -13,13 +9,15 @@ import { signInWithPhoneNumber } from "firebase/auth";
 import auth from "../firebase/setup";
 import { Otptimer } from "otp-timer-ts";
 import { toast } from "sonner";
+import {
+  useSignupMutation,
+} from "@/redux/features/auth/authApiSlice";
 
 function OtpForm(props) {
   const { registerInfo, message, path } = props;
   const [form] = useForm();
   const [otp, setOtp] = useState("");
-  const [addNewUser] = useAddNewUserMutation();
-  const [forgotPassword] = useForgotPasswordMutation();
+  const [signup] = useSignupMutation();
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -31,26 +29,21 @@ function OtpForm(props) {
 
     await signInWithPhoneNumber(auth, user_phoneNumber, appVerifier)
       .then((confirmation) => {
-        console.log(confirmation);
+        // console.log(confirmation);
         window.confirmationResult = confirmation;
         toast.success("Mã OTP đang được gửi tới số điện thoại");
       })
       .catch((err) => console.log(err));
-  };
-
-  useEffect(() => {
-    sendOtp();
-  }, []);
+  }
 
   const onFinish = async () => {
+    setIsSuccess(true);
     window.confirmationResult
       .confirm(otp)
-      .then(async (confirmationResult) => {
-        console.log(confirmationResult);
+      .then(async () => {
         try {
           path.includes("register")
-            ? await addNewUser(registerInfo).unwrap()
-            : await forgotPassword(registerInfo).unwrap();
+            && await signup(registerInfo).unwrap()
           setIsSuccess(true);
         } catch (error) {
           console.log(error);
@@ -65,13 +58,23 @@ function OtpForm(props) {
   };
 
   useEffect(() => {
+    sendOtp()
+  }, [])
+
+  useEffect(() => {
     if (errorMessage.length > 0) {
       toast.error("Đã xảy ra lỗi");
     }
-    if (isSuccess === true) {
+    if (isSuccess === true && path.includes("register")) {
       toast.success(message);
       setTimeout(() => {
         navigate("/login");
+      }, 2000);
+    } else if (isSuccess === true && !path.includes("register")) {
+      console.log(registerInfo);
+      toast.success(message);
+      setTimeout(() => {
+        navigate("/set-new-password", { state: registerInfo });
       }, 2000);
     }
   }, [isSuccess, errorMessage, navigate]);

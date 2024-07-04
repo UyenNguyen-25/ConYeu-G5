@@ -29,16 +29,16 @@ const Sidebar = () => {
     ]),
     getItem(
       "Products Management",
-      "/products-management",
+      "products-management",
       <Package size={20} />,
       ["admin", "manager", "staff"]
     ),
-    getItem("Orders Management", "/orders-management", <FileText size={20} />, [
+    getItem("Orders Management", "/dashboard/orders-management", <FileText size={20} />, [
       "admin",
       "manager",
       "staff",
     ]),
-    getItem("Users Management", "/users-management", <Users size={20} />, [
+    getItem("Users Management", "/dashboard/users-management", <Users size={20} />, [
       "admin",
       "manager",
     ]),
@@ -77,10 +77,9 @@ const Sidebar = () => {
           </Typography.Title>
         )}
         <Menu
-          defaultSelectedKeys={[location.pathname]}
+          defaultSelectedKeys={location.pathname}
           mode="inline"
           items={items}
-          ite
           onClick={(e) => handleNavigate(e.key)}
           style={{
             background: "#61ADFD",

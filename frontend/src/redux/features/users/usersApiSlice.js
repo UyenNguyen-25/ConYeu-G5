@@ -2,7 +2,7 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 
-const USERS_URL = "/api/users";
+const USERS_URL = "/api/user";
 
 const usersAdapter = createEntityAdapter({});
 
@@ -11,25 +11,9 @@ const initialState = usersAdapter.getInitialState();
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: () => USERS_URL,
-      validateStatus: (response, result) => {
-        return response.status === 200 && !result.isError;
-      },
-      transformResponse: (responseData) => {
-        const loaderUsers = responseData.map((user) => {
-          user.user_id = user._id;
-          return user;
-        });
-        return usersAdapter.setAll(initialState, loaderUsers);
-      },
-      providesTags: (result, error, arg) => {
-        if (result?.ids) {
-          return [
-            { type: "User", id: "LIST" },
-            ...result.ids.map((id) => ({ type: "User", id })),
-          ];
-        } else return [{ type: "User", id: "LIST" }];
-      },
+      query: (arg) => ({
+        url: `${USERS_URL}/?search=${arg.search}&role=${arg.role}`,
+      }),
     }),
     addNewUser: builder.mutation({
       query: (initialUserData) => ({
@@ -69,13 +53,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, error, arg) => [{ type: "User", id: arg.id }],
     }),
-    forgotPassword: builder.mutation({
-      query: ({ user_phoneNumber, user_password }) => ({
-        url: `${USERS_URL}/forgot-password`,
+    changePassword: builder.mutation({
+      query: ({ user_phoneNumber, oldPass, newPass }) => ({
+        url: `${USERS_URL}/change-password`,
         method: "PUT",
         body: {
           user_phoneNumber,
-          user_password,
+          oldPass,
+          newPass,
         },
       }),
       invalidatesTags: (result, error, arg) => [
@@ -91,24 +76,5 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useCheckPhoneExistedMutation,
-  useForgotPasswordMutation,
+  useChangePasswordMutation,
 } = usersApiSlice;
-
-// returns the query result object
-export const selectUsersResult = usersApiSlice.endpoints.getUsers.select();
-
-// creates memoized selector
-const selectUsersData = createSelector(
-  selectUsersResult,
-  (usersResult) => usersResult.data // normalized state object with ids & entities
-);
-
-//getSelectors creates these selectors and we rename them with aliases using destructuring
-export const {
-  selectAll: selectAllUsers,
-  selectById: selectUserById,
-  selectIds: selectUserIds,
-  // Pass in a selector that returns the users slice of state
-} = usersAdapter.getSelectors(
-  (state) => selectUsersData(state) ?? initialState
-);
