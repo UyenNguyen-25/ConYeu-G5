@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import ProductReviews from "../components/ProductReview";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -29,7 +30,7 @@ const ProductDetail = () => {
         const response = await axios.get(
           `${BASE_URL}/api/product/get-product-by-id/${id}`
         );
-        
+
         setLoading(false);
         const productDetail = await response.data;
         console.log("jjjjjjjjjjj", productDetail);
