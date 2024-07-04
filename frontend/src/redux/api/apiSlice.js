@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { setCredentials } from "../features/auth/authSlice";
+import { BASE_URL } from "@/constants/apiConfig";
 
 const baseQuery = fetchBaseQuery({
   // baseUrl: "https://con-yeu-g5.vercel.app",
-  baseUrl: "http://localhost:5000",
+  baseUrl: BASE_URL,
   credentials: "include",
   mode: "cors",
   prepareHeaders: (headers, { getState }) => {
