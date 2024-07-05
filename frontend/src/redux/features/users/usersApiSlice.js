@@ -15,6 +15,15 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}/?search=${arg.search}&role=${arg.role}`,
       }),
     }),
+    getUser: builder.query({
+      query: (initialUserData) => ({
+        url: `${USERS_URL}/get-user`,
+        method:"GET",
+        body: {
+          ...initialUserData,
+        },
+      }),
+    }),
     addNewUser: builder.mutation({
       query: (initialUserData) => ({
         url: USERS_URL,

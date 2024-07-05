@@ -1,3 +1,9 @@
+import momoLogo from "./Logo-MoMo-Square.png"
+import grabLogo from "./logo-grab.jpg"
+import emptyCart from "./emptyCart.png"
+import homePage from "./home-page.jpg"
+import delivery from "./delivery.jpg"
+
 const Logo = () => {
   return (
     <svg
@@ -14,5 +20,7 @@ const Logo = () => {
     </svg>
   );
 };
+
+export { momoLogo, grabLogo, emptyCart, homePage, delivery }
 
 export default Logo;

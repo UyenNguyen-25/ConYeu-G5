@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
+import { emptyCart } from "@/assets/logo";
 
 const CartPage = () => {
   const nav = useNavigate();
@@ -54,9 +55,9 @@ const CartPage = () => {
     const storedAddress = localStorage.getItem('shippingAddress');
     console.log('storedAddress', storedAddress)
     if (storedAddress) {
-        setShippingAddress(JSON.parse(storedAddress));
+      setShippingAddress(JSON.parse(storedAddress));
     }
-}, []);
+  }, []);
 
   const handleDecrease = (productId) => {
     dispatch(decreaseQuantity(productId));
@@ -92,7 +93,7 @@ const CartPage = () => {
       <h1 className="text-4xl font-semibold pb-10">Giỏ Hàng</h1>
       {cartItems.length === 0 ? (
         <div className="justify-center items-center flex flex-col">
-          <img src="dist/emptyCart.png" className="w-1/3 mx-auto -mt-10" />
+          <img src={emptyCart} className="w-1/3 mx-auto -mt-10" />
           <h1 className="text-xl font-semibold">Giỏ hàng hiện đang trống...</h1>
           <button
             className="text-base border border-transparent bg-[#E44918] hover:bg-[#d63e12] rounded-full text-white px-6 py-3 mt-6 transition duration-300 transform hover:scale-105 shadow-lg"
@@ -181,24 +182,24 @@ const CartPage = () => {
               </div> */}
               {shippingAddress ? (
                 <>
-                    <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
-                    <div className=" flex justify-center gap-3 p-3 rounded-lg">
-                        <div>
-                            <p>{shippingAddress.name},</p>
-                            <p>{shippingAddress.phone},</p>
-                            <p>{shippingAddress.fullAddress}</p>
-                        </div>
+                  <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                  <div className=" flex justify-center gap-3 p-3 rounded-lg">
+                    <div>
+                      <p>{shippingAddress.name},</p>
+                      <p>{shippingAddress.phone},</p>
+                      <p>{shippingAddress.fullAddress}</p>
                     </div>
+                  </div>
                 </>
-            ) : (
-              <>
-              <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
-              <div className="bg-orange-600 flex justify-center gap-3 p-3 text-white rounded-lg">
-                <MapPin />
-                <AddAddress setShippingAddress={setShippingAddress} />
-              </div>
-              </>
-            )}
+              ) : (
+                <>
+                  <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                  <div className="bg-orange-600 flex justify-center gap-3 p-3 text-white rounded-lg">
+                    <MapPin />
+                    <AddAddress setShippingAddress={setShippingAddress} />
+                  </div>
+                </>
+              )}
             </div>
             <div className="rounded-lg bg-white p-6 shadow-lg flex flex-col gap-2">
               <p className="font-bold mb-2">Phương thức thanh toán</p>
@@ -218,7 +219,7 @@ const CartPage = () => {
                 />{" "}
                 <span>Thanh toán qua VN Pay</span>
               </div>
-              
+
             </div>
             <div className="rounded-lg bg-white p-6 shadow-lg">
               <Table>
