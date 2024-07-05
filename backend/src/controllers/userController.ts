@@ -39,7 +39,20 @@ const getAllUsers: RequestHandler = asyncHandler(
 
 const getUserDetail: RequestHandler = asyncHandler(
   async (req, res): Promise<any> => {
+    try {
+      const phoneNumber = req.query.phoneNumber || 0
 
+      const foundUser = await User.findOne({ user_phoneNumber: phoneNumber }).lean()
+
+      if (!foundUser) {
+        return res.status(404).json({ message: "Số điện thoại này không tồn tại" })
+      }
+
+      return res.status(200).json(foundUser)
+
+    } catch (error) {
+      return res.status(500).json('Internal server error')
+    }
   })
 
 const createNewUser: RequestHandler = asyncHandler(

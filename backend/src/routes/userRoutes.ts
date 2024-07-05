@@ -11,10 +11,10 @@ router.put("/change-password", userController.changePassword);
 router.use(verifyJWT)
 
 router
-  .route("/")
-  .get(userController.getAllUsers)
-  .put(userController.updateUser)
-  .delete(userController.deleteUser);
+.route("/")
+.get(userController.getAllUsers)
+.put(userController.updateUser)
+.delete(userController.deleteUser);
 
 router.get("/get-user", userController.getUserDetail)
 
