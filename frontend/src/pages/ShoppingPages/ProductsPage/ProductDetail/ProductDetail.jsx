@@ -159,6 +159,7 @@ const ProductDetail = () => {
                 src={detail?.product_img}
               />
             </div>
+            <ProductReviews product={detail}/>
           </div>
         )}
       </div>
