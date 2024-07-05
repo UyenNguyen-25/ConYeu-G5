@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const PaymentSchema = new mongoose.Schema(
   {
     order_id: {
-      type: mongoose.Schema.Types.String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
       required: true,
     },
@@ -12,7 +12,7 @@ const PaymentSchema = new mongoose.Schema(
       required: true,
       default: "COD",
     },
-    payment_status:{
+    payment_status: {
       type: String,
       required: true,
       default: "Unpaid", //thanh cong Paid
