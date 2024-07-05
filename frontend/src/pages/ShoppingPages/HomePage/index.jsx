@@ -1,13 +1,14 @@
 // import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./style.css";
+import { homePage } from "@/assets/logo";
 export default function HomePage() {
   const nav = useNavigate();
   return (
     <div className="relative w-full">
       <img
         className="object-cover"
-        src="dist/home-page.jpg"
+        src={homePage}
         alt="Landing Page"
       />
       <div className="overlay absolute inset-0 flex flex-col items-start justify-center pl-[200px] -top-36 text-black">

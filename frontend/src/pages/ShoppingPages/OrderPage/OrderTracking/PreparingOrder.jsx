@@ -1,3 +1,4 @@
+import { delivery } from '@/assets/logo';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
@@ -37,7 +38,7 @@ const PreparingOrder = () => {
       {
         false ? (
           <div className='flex flex-col justify-center items-center gap-6'>
-            <img className='w-1/6 mx-auto' src='dist/delivery.jpg' />
+            <img className='w-1/6 mx-auto' src={delivery} />
             <h1>Hiện chưa có đơn hàng nào chờ xác nhận</h1>
           </div>
         ) : (

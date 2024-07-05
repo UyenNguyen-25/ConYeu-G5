@@ -1,3 +1,6 @@
+import { grabLogo, momoLogo } from "@/assets/logo";
+
+
 function Footer() {
   return (
     <div className="mx-6 py-10 text-center md:text-left">
@@ -52,7 +55,7 @@ function Footer() {
           <p className="mb-4">
             <img
               className="text-neutral-600 dark:text-neutral-200 w-10"
-              src="dist/Logo MoMo Square.png"
+              src={momoLogo}
             />
           </p>
           <p className="mb-4">
@@ -63,7 +66,7 @@ function Footer() {
           <p className="mb-4">
             <img
               className="text-neutral-600 dark:text-neutral-200 w-10"
-              src="dist/logo-grab.jpg"
+              src={grabLogo}
             />
           </p>
         </div>

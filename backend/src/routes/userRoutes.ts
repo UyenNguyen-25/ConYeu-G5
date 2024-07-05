@@ -8,15 +8,17 @@ router.post("/", userController.createNewUser);
 router.post("/check-phone-existed", userController.checkPhoneExisted);
 router.put("/change-password", userController.changePassword);
 
+router.use(verifyJWT)
+
 router
-  // .use(verifyJWT)
   .route("/")
   .get(userController.getAllUsers)
   .put(userController.updateUser)
   .delete(userController.deleteUser);
 
+router.get("/get-user", userController.getUserDetail)
+
 router
-  .use(verifyJWT)
   .route("/confirm-user-address")
   .put(userController.confirmUserAddress);
 

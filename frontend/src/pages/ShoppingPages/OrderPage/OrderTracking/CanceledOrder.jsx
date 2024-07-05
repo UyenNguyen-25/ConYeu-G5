@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Popover, Space } from 'antd';
+import { delivery } from '@/assets/logo';
 const CanceledOrder = () => {
     const [empty, setEmpty] = useState(false);
     const [detail, setDetail] = useState();
@@ -10,11 +11,11 @@ const CanceledOrder = () => {
 
     const content = (
         <div>
-          <p className='font-semibold'>Hủy lúc: <span className='font-light'>09-04-2024 19:42</span> </p> 
-          <p className='font-semibold'>Hủy bởi: <span className='font-light'>người mua</span></p>
-          <p className='font-semibold'>Phương thức thanh toán: <span className='font-light'>COD</span></p>
+            <p className='font-semibold'>Hủy lúc: <span className='font-light'>09-04-2024 19:42</span> </p>
+            <p className='font-semibold'>Hủy bởi: <span className='font-light'>người mua</span></p>
+            <p className='font-semibold'>Phương thức thanh toán: <span className='font-light'>COD</span></p>
         </div>
-      );
+    );
     useEffect(() => {
         const fetchDetail = async () => {
             try {
@@ -39,7 +40,7 @@ const CanceledOrder = () => {
             {
                 false ? (
                     <div className='flex flex-col justify-center items-center gap-6'>
-                        <img className='w-1/6 mx-auto' src='dist/delivery.jpg' />
+                        <img className='w-1/6 mx-auto' src={delivery} />
                         <h1>Hiện chưa có đơn hàng nào đã hủy</h1>
                     </div>
                 ) : (

@@ -37,6 +37,11 @@ const getAllUsers: RequestHandler = asyncHandler(
   }
 );
 
+const getUserDetail: RequestHandler = asyncHandler(
+  async (req, res): Promise<any> => {
+
+  })
+
 const createNewUser: RequestHandler = asyncHandler(
   async (req, res): Promise<any> => {
     const requestUser: UserInterface = req.body;
@@ -319,6 +324,7 @@ const userController = {
   confirmUserAddress,
   checkPhoneExisted,
   changePassword,
+  getUserDetail
 };
 
 export default userController;
