@@ -205,6 +205,7 @@ const get_product_by_id: RequestHandler = asyncHandler(
     const product = await Product.findOne({ _id: product_id })
       .populate("product_brand_id", "brand_name -_id", "", "")
       .populate("product_status", "product_status_description -_id")
+      .populate("feedback_id")
       .lean()
       .exec();
     if (product) {

@@ -88,36 +88,64 @@ const createPayment: RequestHandler = asyncHandler(async (req: any, res: any): P
 
 
 //create and save payment with MOMO
+// const callback: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+//     console.log('call back', req.body)
+//     try {
+//         const checkPaymentStatus = req.body.resultCode;
+//         let status;
+//         if (checkPaymentStatus === 0) {
+//             status = "Paid";
+//         } else {
+//             status = "UnPaid";
+            
+//             return;
+//         }
+//         //check thanh toan fail xoa order 
+//         //find orderId, ko có thì trả về
+        
+
+//         let paymentMomo = new Payment({
+//             order_id: req.body.orderId,
+//             payment_method: req.body.partnerCode,
+//             payment_status: status,
+//         })
+//         console.log(paymentMomo);
+//         await paymentMomo.save();
+//         return res.status(200).json(req.body)
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json('Internal server error.')
+//     }
+// })
+
 const callback: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
-    console.log('call back', req.body)
+    console.log('call back', req.body);
     try {
         const checkPaymentStatus = req.body.resultCode;
         let status;
         if (checkPaymentStatus === 0) {
             status = "Paid";
         } else {
-            status = "UnPaid";
-            
-            return;
+            status = "Unpaid";
+            return res.status(200).json({ message: 'Payment failed, order remains unpaid' });
         }
-        //check thanh toan fail xoa order 
-        //find orderId, ko có thì trả về
-        
 
-        let paymentMomo = new Payment({
-            order_id: req.body.orderId,
-            payment_method: req.body.partnerCode,
-            payment_status: status,
-        })
-        console.log(paymentMomo);
-        await paymentMomo.save();
-        return res.status(200).json(req.body)
+        const payment = await Payment.findOneAndUpdate(
+            { order_id: req.body.orderId },
+            { payment_status: status },
+            { new: true }
+        );
+
+        if (!payment) {
+            return res.status(400).json({ message: 'Payment not found' });
+        }
+
+        res.status(200).json(payment);
     } catch (error) {
         console.log(error);
-        res.status(500).json('Internal server error.')
+        res.status(500).json('Internal server error.');
     }
-})
-
+});
 
 
 const createPaymentZaloPay: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
