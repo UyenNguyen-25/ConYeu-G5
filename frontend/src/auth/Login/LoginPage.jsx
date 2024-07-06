@@ -46,9 +46,6 @@ const Login = () => {
         name="normal_login"
         className="login-form w-full mt-6"
         layout="vertical"
-        initialValues={{
-          remember: true,
-        }}
         onFinish={onFinish}
       >
         <Form.Item label="Số điện thoại">

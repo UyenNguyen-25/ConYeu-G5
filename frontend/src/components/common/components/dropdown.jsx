@@ -1,5 +1,6 @@
 import { useSendLogoutMutation } from "@/redux/features/auth/authApiSlice";
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import { useGetUserQuery } from "@/redux/features/users/usersApiSlice";
 import { Avatar, Button, Dropdown, Flex } from "antd";
 import { ChevronDown } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -9,14 +10,19 @@ import { toast } from "sonner";
 const DropdownCustomize = (props) => {
   // eslint-disable-next-line no-unused-vars
   const { itemsProps, className } = props;
-  const userDetail = useSelector(selectCurrentUser);
+  const user = useSelector(selectCurrentUser);
+  const { data: userDetail } = useGetUserQuery({ user_phoneNumber: user?.user_phoneNumber },
+    {
+      refetchOnFocus: true,
+      refetchOnMountOrArgChange: true,
+    }
+  )
   const splitName = userDetail?.user_fullname.split(" ");
-  const user_role = userDetail?.user_role?.role_description;
   const navigate = useNavigate();
   const [sendLogout] = useSendLogoutMutation();
 
   const checkRoleGate = (item) => {
-    return item?.permission.includes(user_role?.toLowerCase()) && item;
+    return item?.permission.includes(userDetail?.user_role?.role_description?.toLowerCase()) && item;
   };
 
   const checkRoleGateItem = itemsProps
