@@ -124,29 +124,16 @@ const updateUser: RequestHandler = asyncHandler(
     const requestUser: UserInterface = req.body;
 
     //confirm data
-    if (!requestUser.user_id) {
-      return res.status(400).json({ message: "id is required" });
+    if (!requestUser.user_phoneNumber) {
+      return res.status(400).json({ message: "user_phoneNumber is required" });
     }
 
-    const user = await User.findById(requestUser.user_id).exec();
+    const user = await User.findOne({user_phoneNumber:requestUser.user_phoneNumber}).exec();
 
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
 
-    //check duplicate
-    const duplicate = await User.findOne({
-      user_phoneNumber: requestUser.user_phoneNumber,
-    })
-      .lean()
-      .exec();
-
-    if (
-      duplicate &&
-      duplicate?._id.toString() !== requestUser.user_id.toString()
-    ) {
-      return res.status(409).json({ message: "Phone number existed" });
-    }
     //hash password
     if (requestUser.user_password && requestUser.user_password.length > 0) {
       user.user_password = await bcrypt.hash(requestUser.user_password, 10);
@@ -162,7 +149,6 @@ const updateUser: RequestHandler = asyncHandler(
     if (!address) {
       const createNewAddress = await UserAddress.create({
         fullname: user.user_fullname,
-        phoneNumber: user.user_phoneNumber,
         address_line1: requestUser.address,
       });
       await user.updateOne({}, {}).set("address_id", createNewAddress._id);
@@ -183,9 +169,6 @@ const updateUser: RequestHandler = asyncHandler(
       address.phoneNumber = requestUser.user_phoneNumber;
       await address?.save();
     }
-
-    (user.user_phoneNumber =
-      requestUser.user_phoneNumber || user.user_phoneNumber),
       (user.user_fullname = requestUser.user_fullname || user.user_fullname),
       (user.user_email = requestUser.user_email || user.user_email),
       (user.user_status = requestUser.user_status),
