@@ -16,12 +16,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getUser: builder.query({
-      query: (initialUserData) => ({
-        url: `${USERS_URL}/get-user`,
-        method:"GET",
-        body: {
-          ...initialUserData,
-        },
+      query: (arg) => ({
+        url: `${USERS_URL}/get-user/?phoneNumber=${arg.user_phoneNumber}`,
       }),
     }),
     addNewUser: builder.mutation({
@@ -45,6 +41,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, arg) => [
         { type: "User", user_id: arg.id },
       ],
+      
     }),
     deleteUser: builder.mutation({
       query: ({ user_id }) => ({
@@ -80,6 +77,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetUserQuery,
   useGetUsersQuery,
   useAddNewUserMutation,
   useUpdateUserMutation,
