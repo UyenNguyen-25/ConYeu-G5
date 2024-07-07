@@ -34,10 +34,13 @@ import { useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
 import { emptyCart } from "@/assets/logo";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 
 const CartPage = () => {
   const nav = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const token = useSelector((state) => state.auth.token);
+  const userDetail = useSelector(selectCurrentUser);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [shippingAddress, setShippingAddress] = useState(null);
   const [text, setText] = React.useState("https://ant.design/");
   const cartItems = useSelector((state) => state.cart.items);
@@ -50,6 +53,8 @@ const CartPage = () => {
     (total, item) => total + item.product_price * item.quantity,
     0
   );
+  console.log(token)
+  console.log('user', userDetail)
 
   useEffect(() => {
     const storedAddress = localStorage.getItem('shippingAddress');
@@ -75,17 +80,73 @@ const CartPage = () => {
     console.log(e);
   };
 
-  const handlePayment = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/momo/payment`);
+  // const handlePayment = async () => {
+  //   try {
+  //     const response = await axios.get(`${BASE_URL}/api/momo/payment`);
 
-      if (response.data && response.data.payUrl) {
-        window.location.href = response.data.payUrl;
+  //     if (response.data && response.data.payUrl) {
+  //       window.location.href = response.data.payUrl;
+  //     } else {
+  //       console.error('Thanh toán MoMo không thành công:', response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Lỗi khi xử lý thanh toán:', error);
+  //   }
+  // };
+
+  const handlePayment = async () => {
+    if (!shippingAddress) {
+      message.error("Vui lòng thêm địa chỉ giao hàng");
+      return;
+    }
+
+    const orderItems = cartItems.map((item) => ({
+      product_id: item._id,
+      quantity: item.quantity,
+    }));
+
+    const orderData = {
+      user_id: userDetail.user_id,
+      order_items: orderItems,
+      payment_method: paymentMethod,
+      shippingAddress,
+    };
+    console.log('order data', orderData)
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/order/create-new-order`,
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 201) {
+        if (paymentMethod === "COD") {
+          message.success("Đặt hàng thành công!");
+          nav(`/order-confirmation?orderId=${response.data._id}`); // Điều hướng đến trang xác nhận đơn hàng
+        } else if (paymentMethod === "momo") {
+          const momoData = {
+            orderId: response.data._id,
+            amount: response.data.total_money, // Bạn cần đảm bảo rằng `amount` được trả về từ endpoint tạo đơn hàng
+          };
+          const momoResponse = await axios.post(`${BASE_URL}/api/momo/payment`, momoData);
+          if (momoResponse.data && momoResponse.data.payUrl) {
+            window.location.href = momoResponse.data.payUrl; // Chuyển hướng đến trang thanh toán MoMo
+          } else {
+            console.error("Thanh toán MoMo không thành công:", momoResponse.data);
+            message.error("Thanh toán MoMo không thành công");
+          }
+        }
       } else {
-        console.error('Thanh toán MoMo không thành công:', response.data);
+        message.error("Đặt hàng thất bại, vui lòng thử lại");
       }
     } catch (error) {
-      console.error('Lỗi khi xử lý thanh toán:', error);
+      console.error("Lỗi khi đặt hàng:", error);
+      message.error("Đặt hàng thất bại, vui lòng thử lại");
     }
   };
   return (
@@ -205,19 +266,25 @@ const CartPage = () => {
               <p className="font-bold mb-2">Phương thức thanh toán</p>
               <div>
                 <input
-                  type="checkbox"
-                  checked={paymentMethod === "cod"}
-                  onChange={() => setPaymentMethod("cod")}
-                />{" "}
+                  type="radio"
+                  id="COD"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={paymentMethod === "COD"}
+                  onChange={() => setPaymentMethod("COD")}
+                />
                 <span>Thanh toán khi nhận hàng</span>
               </div>
               <div>
                 <input
-                  type="checkbox"
-                  checked={paymentMethod === "vnpay"}
-                  onChange={() => setPaymentMethod("vnpay")}
-                />{" "}
-                <span>Thanh toán qua VN Pay</span>
+                  type="radio"
+                  id="momo"
+                  name="paymentMethod"
+                  value="momo"
+                  checked={paymentMethod === "momo"}
+                  onChange={() => setPaymentMethod("momo")}
+                />
+                <span>Thanh toán qua Momo</span>
               </div>
 
             </div>

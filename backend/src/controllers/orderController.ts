@@ -49,7 +49,6 @@ const getOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any): 
 const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Promise<void> => {
     const { user_id,
         order_items,
-        order_status_id,
         payment_method,
         shippingAddress } = req.body;
 
@@ -59,6 +58,12 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
     }
 
     const { name, phone, fullAddress } = shippingAddress;
+
+    const pendingStatus = await OrderStatus.findOne({ order_status_description: 'pending' });
+    if (!pendingStatus) {
+        throw new Error('Pending status not found');
+    }
+    const order_status_id = pendingStatus._id;
 
 
     const orderItemIds = await Promise.all(order_items.map(async (item: any) => {
@@ -104,7 +109,7 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
     let newPayment = new Payment({
         order_id: order._id,
         payment_method,
-        payment_status: payment_method.toUpperCase() === "COD" ? "Unpaid" : "Paid"
+        payment_status: "Unpaid"
     });
     await newPayment.save();
 
@@ -143,7 +148,25 @@ const updateOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any
 
 });
 
+const getOrderDetail: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+    try {
+        const { orderId } = req.params;
+        if (!orderId) {
+            return res.status(400).json({ message: "Order ID required" });
+        }
+        const order = await Order.findById(orderId)
+            .populate('order_items')
+            .populate('order_status_id')
+            .exec();
+        res.status(200).json(order);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 
-const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus }
+});
+
+
+const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail }
 
 export default orderController;
