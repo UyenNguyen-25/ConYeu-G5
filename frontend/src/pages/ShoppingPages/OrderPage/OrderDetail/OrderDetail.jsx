@@ -107,7 +107,7 @@ const OrderDetail = () => {
           {orderDetails.order_items.map((item) => (
             <div key={item._id} className='flex justify-between mb-4'>
               <div className='flex items-center'>
-                <div className='w-16 h-16 bg-blue-200 flex items-center justify-center'></div>
+                <img className='w-16 h-16' src={products[item.product_id].product_img}/>
                 <div className='ml-4'>
                   <p className='font-semibold'>
                     {products[item.product_id]

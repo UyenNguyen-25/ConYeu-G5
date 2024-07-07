@@ -166,7 +166,36 @@ const getOrderDetail: RequestHandler = asyncHandler(async (req: any, res: any): 
 
 });
 
+const getOrderByStatusAndUserId: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+    const { userId, status } = req.body;
 
-const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail }
+    try {
+        // Tìm trạng thái đơn hàng theo mô tả
+        const orderStatus = await OrderStatus.findOne({ order_status_description: status });
+
+        if (!orderStatus) {
+            return res.status(404).json({ message: 'Không tìm thấy trạng thái đơn hàng.' });
+        }
+
+        // Tìm tất cả đơn hàng của người dùng cụ thể với trạng thái đó
+        const orders = await Order.find({ user_id: userId, order_status_id: orderStatus._id })
+            .populate('order_items')
+            .populate('order_status_id')
+            .exec();
+
+            if (!orders.length) {
+                return res.status(200).json([]);
+            }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Lỗi khi lấy đơn hàng:', error);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy đơn hàng.' });
+    }
+
+});
+
+
+const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId }
 
 export default orderController;

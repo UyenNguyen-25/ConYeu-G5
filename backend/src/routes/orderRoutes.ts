@@ -12,5 +12,6 @@ router.route("/update-order-status/:orderId").post(orderController.updateOrderSt
 router.route("/create-new-order").post(orderController.createOrder);
 router.route("/get-order-status").post(orderController.getOrderStatus);
 router.route("/get-order-detail/:orderId").get(orderController.getOrderDetail);
+router.route("/get-order-by-status-userId").post(orderController.getOrderByStatusAndUserId);
 
 export default orderRoutes;

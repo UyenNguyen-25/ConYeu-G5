@@ -18,7 +18,7 @@ import { BASE_URL } from '@/constants/apiConfig';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 
-const PendingOrder = () => {
+const DeliveringOrder = () => {
   const userDetail = useSelector(selectCurrentUser);
   const token = useSelector((state) => state.auth.token);
   const [empty, setEmpty] = useState(false);
@@ -35,7 +35,7 @@ const PendingOrder = () => {
         const response = await axios.post(`${BASE_URL}/api/order/get-order-by-status-userId`,
           {
             userId: userDetail.user_id,
-            status: 'pending'
+            status: 'delivering'
           },
           {
             headers: {
@@ -43,6 +43,7 @@ const PendingOrder = () => {
             }
           }
         );
+        console.log('response', response)
 
         if (response.data.length === 0) {
           setEmpty(true);
@@ -82,11 +83,11 @@ const PendingOrder = () => {
 
   return (
     <div className='py-6'>
-      <h1 className='font-semibold'>DANH SÁCH ĐƠN HÀNG CHỜ XÁC NHẬN</h1>
+      <h1 className='font-semibold'>DANH SÁCH ĐƠN HÀNG ĐANG GIAO</h1>
       {empty ? (
         <div className='flex flex-col justify-center items-center gap-6'>
           <img className='w-1/6 mx-auto' src={delivery} alt="delivery" />
-          <h1>Hiện chưa có đơn hàng nào chờ xác nhận</h1>
+          <h1>Hiện chưa có đơn hàng nào đang giao</h1>
         </div>
       ) : (
         orders.map(order => (
@@ -111,11 +112,11 @@ const PendingOrder = () => {
             <div className='flex gap-10 justify-end mx-6 my-4'>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className='bg-[#E44918]  text-white px-4 py-2 rounded-md shadow-lg transition duration-300 ease-in-out transform hover:bg-[#C93D15] hover:shadow-xl hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed7753]' variant="outline">Hủy đơn</Button>
+                  <Button className='bg-[#E44918]  text-white px-4 py-2 rounded-md shadow-lg transition duration-300 ease-in-out transform hover:bg-[#C93D15] hover:shadow-xl hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ed7753]' variant="outline">Đã nhận hàng</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className='bg-white'>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Bạn có muốn hủy đơn hàng này không?</AlertDialogTitle>
+                    <AlertDialogTitle>Bạn có đồng ý đã nhận đơn hàng này không?</AlertDialogTitle>
                     <AlertDialogDescription>
                       Bạn sẽ không thể thay đổi khi ấn xác nhận.
                     </AlertDialogDescription>
@@ -136,4 +137,4 @@ const PendingOrder = () => {
   );
 };
 
-export default PendingOrder;
+export default DeliveringOrder;
