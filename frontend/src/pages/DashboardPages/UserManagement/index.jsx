@@ -17,9 +17,7 @@ const UserManagement = () => {
   });
   const [isActive, setIsActive] = useState({ bt1: true, bt2: false });
 
-  const { data: users, isLoading } = useGetUsersQuery(params,{
-    pollingInterval: 1000,
-    refetchOnFocus: true,
+  const { data: users, refetch, isLoading } = useGetUsersQuery(params, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -43,7 +41,7 @@ const UserManagement = () => {
             enterButton
             className="w-1/3"
           />
-          <CreateAccount />
+          <CreateAccount refetch={refetch} />
         </div>
         <div className="flex-1 space-x-6">
           <Button
@@ -58,6 +56,7 @@ const UserManagement = () => {
           <Button
             onClick={() => {
               setIsActive({ bt1: false, bt2: true });
+              refetch()
               setParams((params) => ({ ...params, role: "customer" }));
             }}
             type={`${isActive.bt2 ? "primary" : ""}`}
@@ -70,6 +69,7 @@ const UserManagement = () => {
             usersList={userList}
             isLoading={isLoading}
             employeeBtn={isActive.bt1}
+            refetch={refetch}
           />
         </div>
       </div>

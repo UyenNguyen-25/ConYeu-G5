@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useDeleteUserMutation, useUpdateUserMutation } from "@/redux/features/users/usersApiSlice";
 import { Form, Input, Popconfirm, Select, Table, Tag, Typography } from "antd";
 import { useForm } from "antd/es/form/Form";
@@ -92,7 +93,7 @@ export const EditableCell = ({
   );
 };
 
-const CustomTable = ({ list, Loading, employeeBtn, role }) => {
+const CustomTable = ({ list, Loading, employeeBtn, role, refetch, currentUser }) => {
   const [form] = useForm();
   const [data, setData] = useState();
   const [tableParams, setTableParams] = useState({
@@ -144,10 +145,12 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
     if (isUpdateError) {
       toast.error(updateMsg.data.message)
     } else if (isUpdateSuccess) {
+      refetch()
       toast.success("Update successfully")
     } else if (isDeleteError) {
       toast.error(deleteMsg.data.message)
     } else if (isDeleteSuccess) {
+      refetch()
       toast.success("Delete successfully")
     }
   }, [deleteMsg, isDeleteError, isDeleteSuccess, isUpdateError, isUpdateSuccess, updateMsg])
@@ -228,7 +231,7 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
         ) : (
           <>
             <Typography.Link
-              disabled={editingKey !== ""}
+              disabled={editingKey !== "" || record.user_phoneNumber === currentUser}
               onClick={() => edit(record)}
               style={{
                 marginRight: 10,
@@ -238,7 +241,7 @@ const CustomTable = ({ list, Loading, employeeBtn, role }) => {
             </Typography.Link>
 
             <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)} >
-              <Typography.Link type="danger" disabled={editingKey !== ""}>Delete</Typography.Link>
+              <Typography.Link type="danger" disabled={editingKey !== "" || record.user_phoneNumber === currentUser}>Delete</Typography.Link>
             </Popconfirm>
           </>
         );
