@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useAddNewUserMutation } from "@/redux/features/users/usersApiSlice";
 import { PlusCircleFilled } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Radio } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const CreateAccount = () => {
+const CreateAccount = ({ refetch }) => {
   const [form] = Form.useForm();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -29,8 +30,8 @@ const CreateAccount = () => {
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }
-    
-    
+
+
   };
 
   const handleCancel = () => {
@@ -40,10 +41,11 @@ const CreateAccount = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      refetch()
       toast.success("Create User Success");
       form.resetFields();
       setIsOpen(false)
-    }      
+    }
     isError && toast.error(error?.data.message);
   }, [isSuccess, isError, error, form]);
 
