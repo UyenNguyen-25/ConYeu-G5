@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
 const AddressSchema = new mongoose.Schema({
-  name: {
+  fullname: {
     type: String,
     required: true
   },
-  phone: {
+  phoneNumber: {
     type: String,
     required: true
   },

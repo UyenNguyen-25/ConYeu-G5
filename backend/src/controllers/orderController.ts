@@ -57,7 +57,10 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
         return res.status(400).json({ message: 'Invalid input data' });
     }
 
-    const { name, phone, fullAddress } = shippingAddress;
+    // const { name, phone, fullAddress } = shippingAddress;
+    const fullname = shippingAddress.fullname;
+    const phoneNumber = shippingAddress.phoneNumber;
+    const fullAddress = shippingAddress.address_line1;
 
     const pendingStatus = await OrderStatus.findOne({ order_status_description: 'pending' });
     if (!pendingStatus) {
@@ -101,7 +104,7 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
         order_items: orderItemIds,
         total_money: totalAmount,
         order_status_id,
-        address: { name, phone, fullAddress }
+        address: { fullname, phoneNumber, fullAddress }
     })
 
     await order.save();

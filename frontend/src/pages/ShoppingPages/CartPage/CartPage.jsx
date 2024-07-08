@@ -35,6 +35,7 @@ import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
 import { emptyCart } from "@/assets/logo";
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import EditAddress from "./EditAddress";
 
 const CartPage = () => {
   const nav = useNavigate();
@@ -56,13 +57,47 @@ const CartPage = () => {
   console.log(token)
   console.log('user', userDetail)
 
+  // useEffect(() => {
+  //   const storedAddress = localStorage.getItem('shippingAddress');
+  //   console.log('storedAddress', storedAddress)
+  //   if (storedAddress) {
+  //     setShippingAddress(JSON.parse(storedAddress));
+  //   }
+  // }, []);
+
   useEffect(() => {
-    const storedAddress = localStorage.getItem('shippingAddress');
-    console.log('storedAddress', storedAddress)
-    if (storedAddress) {
-      setShippingAddress(JSON.parse(storedAddress));
+    if (userDetail.user_id) {
+      fetchShippingAddress();
     }
-  }, []);
+  }, [userDetail.user_id, token]);
+
+
+  const fetchShippingAddress = async () => {
+    console.log('userDetail.user_id', userDetail.user_id)
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/user/get-user-address`,
+        { user_id: userDetail.user_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('response.data', response)
+      if (response.data) {
+        console.log('response.data', response.data)
+        setShippingAddress(response.data.address);
+      } else {
+        setShippingAddress(null);
+      }
+    } catch (error) {
+      console.error("Error fetching shipping address:", error);
+      setShippingAddress(null);
+    }
+  };
+
+  console.log('ShippingAddress', shippingAddress)
 
   const handleDecrease = (productId) => {
     dispatch(decreaseQuantity(productId));
@@ -79,20 +114,6 @@ const CartPage = () => {
   const cancel = (e) => {
     console.log(e);
   };
-
-  // const handlePayment = async () => {
-  //   try {
-  //     const response = await axios.get(`${BASE_URL}/api/momo/payment`);
-
-  //     if (response.data && response.data.payUrl) {
-  //       window.location.href = response.data.payUrl;
-  //     } else {
-  //       console.error('Thanh toán MoMo không thành công:', response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Lỗi khi xử lý thanh toán:', error);
-  //   }
-  // };
 
   const handlePayment = async () => {
     if (!shippingAddress) {
@@ -127,15 +148,15 @@ const CartPage = () => {
       if (response.status === 201) {
         if (paymentMethod === "COD") {
           message.success("Đặt hàng thành công!");
-          nav(`/order-confirmation?orderId=${response.data._id}`); // Điều hướng đến trang xác nhận đơn hàng
+          nav(`/order-confirmation?orderId=${response.data._id}`);
         } else if (paymentMethod === "momo") {
           const momoData = {
             orderId: response.data._id,
-            amount: response.data.total_money, // Bạn cần đảm bảo rằng `amount` được trả về từ endpoint tạo đơn hàng
+            amount: response.data.total_money,
           };
           const momoResponse = await axios.post(`${BASE_URL}/api/momo/payment`, momoData);
           if (momoResponse.data && momoResponse.data.payUrl) {
-            window.location.href = momoResponse.data.payUrl; // Chuyển hướng đến trang thanh toán MoMo
+            window.location.href = momoResponse.data.payUrl;
           } else {
             console.error("Thanh toán MoMo không thành công:", momoResponse.data);
             message.error("Thanh toán MoMo không thành công");
@@ -236,19 +257,18 @@ const CartPage = () => {
           </div>
           <div className="flex flex-col gap-6 w-1/3">
             <div className="rounded-lg bg-white p-6 shadow-lg">
-              {/* <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
-              <div className="bg-orange-600 flex justify-center gap-3 p-3 text-white rounded-lg">
-                <MapPin />
-                <AddAddress />
-              </div> */}
               {shippingAddress ? (
                 <>
-                  <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                    <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                    <EditAddress setShippingAddress={setShippingAddress} shippingAddress={shippingAddress}/>
                   <div className=" flex justify-center gap-3 p-3 rounded-lg">
                     <div>
-                      <p>{shippingAddress.name},</p>
-                      <p>{shippingAddress.phone},</p>
-                      <p>{shippingAddress.fullAddress}</p>
+                      {/* <p>{shippingAddress.address.fullname},</p>
+                      <p>{shippingAddress.address.phoneNumber},</p>
+                      <p>{shippingAddress.address.address_line1}</p> */}
+                      <p>{shippingAddress.fullname},</p>
+                      <p>{shippingAddress.phoneNumber},</p>
+                      <p>{shippingAddress.address_line1}</p>
                     </div>
                   </div>
                 </>

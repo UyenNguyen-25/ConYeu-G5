@@ -22,5 +22,9 @@ router
   .route("/confirm-user-address")
   .put(userController.confirmUserAddress);
 
+router
+  .route("/get-user-address")
+  .post(userController.getUserAddressByUserId)
+
 const userRoutes = router;
 export default userRoutes;

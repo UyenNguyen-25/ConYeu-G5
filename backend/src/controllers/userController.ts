@@ -156,7 +156,7 @@ const updateUser: RequestHandler = asyncHandler(
     } else {
       if (requestUser?.address && requestUser.address.length > 0) {
         if (address?.address_line1 && address?.address_line1.length > 0) {
-          if (requestUser.default) {
+          if (requestUser.isDefault) {
             console.log("address1");
 
             address.address_line1 = requestUser.address;
@@ -216,7 +216,7 @@ const confirmUserAddress: RequestHandler = asyncHandler(
 
     if (requestUser?.address && requestUser.address.length > 0) {
       if (address?.address_line1 && address?.address_line1.length > 0) {
-        if (requestUser.default) {
+        if (requestUser.isDefault) {
           console.log("address1");
 
           address.address_line1 = requestUser.address;
@@ -241,6 +241,31 @@ const confirmUserAddress: RequestHandler = asyncHandler(
       message: `${user.user_phoneNumber} updated success`,
       updatedUser,
     });
+  }
+);
+
+const getUserAddressByUserId: RequestHandler = asyncHandler(
+  async (req, res): Promise<any> => {
+    const requestUser: UserAddressInterface = req.body;
+
+    //confirm data
+    if (!requestUser.user_id) {
+      return res.status(400).json({ message: "id is required" });
+    }
+
+    const user = await User.findById(requestUser.user_id).exec();
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const address = await UserAddress.findById(user.address_id).exec();
+
+    if (!address) {
+      return res.status(400).json({ message: "Address not found" });
+    }
+
+    res.status(200).json({ address });
   }
 );
 
@@ -324,7 +349,8 @@ const userController = {
   confirmUserAddress,
   checkPhoneExisted,
   changePassword,
-  getUserDetail
+  getUserDetail,
+  getUserAddressByUserId
 };
 
 export default userController;
