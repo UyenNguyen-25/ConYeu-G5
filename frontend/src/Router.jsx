@@ -25,6 +25,8 @@ import SetNewPassword from "./auth/ForgotPassword/SetNewPassword";
 import Profile from "./pages/ProfillePages";
 import ResetToken from "./routes/ResetRoute/index.";
 import CheckPermissionRoute from "./routes/CheckPermission";
+import OrderConfirmationPage from "./pages/ShoppingPages/OrderPage/OrderConfirmation";
+import OrderDetailUser from "./pages/ShoppingPages/OrderPage/OrderDetail/OrderDetail";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +59,7 @@ const router = createBrowserRouter([
             element: <OrderPage />,
           },
           { path: "purchase/order-detail", element: <OrderDetail /> },
+          { path: "order/order-detail/:orderId", element: <OrderDetailUser /> },
           {
             path: "purchase/request-return",
             element: <RequestReturn />,
@@ -77,6 +80,10 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <Profile />,
+          },
+          {
+            path: "order-confirmation",
+            element: <OrderConfirmationPage />,
           },
         ],
       },

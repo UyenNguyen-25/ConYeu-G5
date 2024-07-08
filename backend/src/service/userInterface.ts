@@ -8,7 +8,7 @@ export interface UserInterface {
   user_phoneNumber: string;
   user_role: "admin" | "manager" | "staff";
   address: string;
-  default: boolean;
+  isDefault: boolean;
   user_status: boolean;
 }
 
@@ -17,5 +17,5 @@ export interface UserAddressInterface {
   fullname: string;
   phoneNumber: string;
   address: string;
-  default: boolean;
+  isDefault: boolean;
 }

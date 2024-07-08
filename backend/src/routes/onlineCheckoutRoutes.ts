@@ -8,7 +8,7 @@ const onlineCheckoutRoutes = router;
 
 // router.use(verifyJWT);
 
-router.route("/payment").get(onlineCheckoutController.createPayment);
+router.route("/payment").post(onlineCheckoutController.createPayment);
 router.route("/paymentZalo").get(onlineCheckoutController.createPaymentZaloPay);
 router.route("/callback").post(onlineCheckoutController.callback);
 

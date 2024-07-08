@@ -6,6 +6,7 @@ import OrderItem from '../models/OrderItem';
 import { error } from 'console';
 import mongoose from 'mongoose';
 import Payment from '../models/Payment';
+import Product from '../models/Product';
 
 const autoCreateStatus: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
 
@@ -47,38 +48,50 @@ const getOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any): 
 
 const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Promise<void> => {
     const { user_id,
-        updateOrderStatus,
-        total_money,
         order_items,
-        order_status_id,
-        payment_method } = req.body;
+        payment_method,
+        shippingAddress } = req.body;
 
 
-    if (!user_id || !order_items || !Array.isArray(order_items)) {
+    if (!user_id || !order_items || !Array.isArray(order_items) || !shippingAddress) {
         return res.status(400).json({ message: 'Invalid input data' });
     }
 
+    // const { name, phone, fullAddress } = shippingAddress;
+    const fullname = shippingAddress.fullname;
+    const phoneNumber = shippingAddress.phoneNumber;
+    const fullAddress = shippingAddress.address_line1;
+
+    const pendingStatus = await OrderStatus.findOne({ order_status_description: 'pending' });
+    if (!pendingStatus) {
+        throw new Error('Pending status not found');
+    }
+    const order_status_id = pendingStatus._id;
+
 
     const orderItemIds = await Promise.all(order_items.map(async (item: any) => {
-        let orderItem = new OrderItem({
+        const product = await Product.findById(item.product_id).select('product_price');
+        if (!product) {
+            throw new Error(`Product with id ${item.product_id} not found`);
+        }
+
+        const orderItem = new OrderItem({
             quantity: item.quantity,
-            product_id: item.product_id
-        })
-        orderItem = await orderItem.save();
+            product_id: item.product_id,
+            price: product.product_price
+        });
+        await orderItem.save();
         return orderItem._id;
     }));
-    const orderItemResolve = await orderItemIds;
-    console.log(orderItemResolve)
 
     const totalPrices = await Promise.all(orderItemIds.map(async (orderItemId: any) => {
-        const orderItem = await OrderItem.findById(orderItemId).populate('product_id', 'product_price');
-        if (orderItem && orderItem.product_id && typeof orderItem.product_id === 'object' && 'product_price' in orderItem.product_id) {
-            const product = orderItem.product_id as any; // Cast to 'any' to access the populated fields
-            const totalPrice = product.product_price * orderItem.quantity;
+        const orderItem = await OrderItem.findById(orderItemId);
+        if (orderItem && orderItem.price) {
+            const totalPrice = orderItem.price * orderItem.quantity;
             return totalPrice;
         } else {
             console.log("error");
-            throw new Error(`OrderItem with id ${orderItemId} not found or Product not populated`);
+            throw new Error(`OrderItem with id ${orderItemId} not found`);
         }
     }));
 
@@ -90,23 +103,22 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
         user_id,
         order_items: orderItemIds,
         total_money: totalAmount,
-        order_status_id
+        order_status_id,
+        address: { fullname, phoneNumber, fullAddress }
     })
 
     await order.save();
 
-    //create payment with COD
-    if (payment_method.toUpperCase() === "COD") {
-        let newPayment = new Payment({
-            order_id: order._id
-        })
-        await newPayment.save();
-
-    }
+    let newPayment = new Payment({
+        order_id: order._id,
+        payment_method,
+        payment_status: "Unpaid"
+    });
+    await newPayment.save();
 
     if (!order)
         return res.status(400).send('the order cannot be created!')
-    res.send(order);
+    return res.status(201).json(order);
 });
 
 
@@ -139,7 +151,54 @@ const updateOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any
 
 });
 
+const getOrderDetail: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+    try {
+        const { orderId } = req.params;
+        if (!orderId) {
+            return res.status(400).json({ message: "Order ID required" });
+        }
+        const order = await Order.findById(orderId)
+            .populate('order_items')
+            .populate('order_status_id')
+            .exec();
+        res.status(200).json(order);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 
-const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus }
+});
+
+const getOrderByStatusAndUserId: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+    const { userId, status } = req.body;
+
+    try {
+        // Tìm trạng thái đơn hàng theo mô tả
+        const orderStatus = await OrderStatus.findOne({ order_status_description: status });
+
+        if (!orderStatus) {
+            return res.status(404).json({ message: 'Không tìm thấy trạng thái đơn hàng.' });
+        }
+
+        // Tìm tất cả đơn hàng của người dùng cụ thể với trạng thái đó
+        const orders = await Order.find({ user_id: userId, order_status_id: orderStatus._id })
+            .populate('order_items')
+            .populate('order_status_id')
+            .exec();
+
+            if (!orders.length) {
+                return res.status(200).json([]);
+            }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Lỗi khi lấy đơn hàng:', error);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy đơn hàng.' });
+    }
+
+});
+
+
+const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId }
 
 export default orderController;

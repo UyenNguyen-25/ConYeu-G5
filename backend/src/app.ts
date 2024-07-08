@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express";
+import session from "express-session";
 import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -23,6 +24,13 @@ app.use(logger);
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+  secret: 'secret-key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // adjust this according to your needs
+}));
 
 // app.use(bodyParser.json({ limit: "10mb" }));
 
