@@ -1,17 +1,16 @@
 import { useState } from "react";
 import {
-  Table,
   Tag,
   Button,
   Input,
   DatePicker,
-  Pagination,
   Dropdown,
   Menu,
 } from "antd";
 import { SearchOutlined, EllipsisOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import "tailwindcss/tailwind.css";
+import CustomTable from "./table";
 
 const { RangePicker } = DatePicker;
 
@@ -47,7 +46,7 @@ const initialData = [
     payment: "Cash",
     phone: "0123456789",
     price: "1.000.000 đ",
-    status: "Preparing",
+    status: "Processing",
   },
   {
     key: "4",
@@ -58,7 +57,7 @@ const initialData = [
     payment: "Cash",
     phone: "0123456789",
     price: "1.000.000 đ",
-    status: "Dispatch",
+    status: "Delivering",
   },
   {
     key: "5",
@@ -87,18 +86,19 @@ const initialData = [
 const statusColors = {
   Rejected: "red",
   Completed: "green",
-  Preparing: "blue",
-  Dispatch: "orange",
+  Processing: "blue",
+  Delivering: "orange",
   Pending: "yellow",
   "Request Return": "purple",
 };
 
 const statuses = [
-  "Rejected",
-  "Completed",
-  "Preparing",
-  "Dispatch",
+  "All orders",
   "Pending",
+  "Processing",
+  "Delivering",
+  "Completed",
+  "Rejected",
   "Request Return",
 ];
 
@@ -107,7 +107,6 @@ const OrderManagement = () => {
   const [filteredData, setFilteredData] = useState(initialData);
   const [selectedStatus, setSelectedStatus] = useState("All orders");
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
 
   const handleFilter = (status) => {
     setSelectedStatus(status);
@@ -117,10 +116,6 @@ const OrderManagement = () => {
       setFilteredData(data.filter((order) => order.status === status));
     }
     setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
   };
 
   const handleChangeStatus = (record, newStatus) => {
@@ -133,11 +128,6 @@ const OrderManagement = () => {
     setData(newData);
     setFilteredData(newData);
   };
-
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
 
   const statusMenu = (record) => (
     <Menu>
@@ -234,78 +224,34 @@ const OrderManagement = () => {
     <>
       <h1 className="mb-4 text-2xl font-bold">Order Management</h1>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex space-x-2">
-          <Input placeholder="Search by phone" prefix={<SearchOutlined />} />
-          <RangePicker className="w-full" />
+        <div className="flex-1 flex space-x-2">
+          <Input placeholder="Search by phone" prefix={<SearchOutlined />} className="max-w-[380px]" />
+          <RangePicker className="min-w-[380px]"
+            id={{
+              start: 'startInput',
+              end: 'endInput',
+            }}
+            onFocus={(_, info) => {
+              console.log('Focus:', info.range);
+            }}
+            onBlur={(_, info) => {
+              console.log('Blur:', info.range);
+            }}
+          />
         </div>
       </div>
       <div className="mb-4">
-        <Button
-          className={`mr-2 ${
-            selectedStatus === "All orders" && "bg-blue-500 text-white"
-          }`}
-          onClick={() => handleFilter("All orders")}
-        >
-          All orders
-        </Button>
-        <Button
-          className={`mr-2 ${
-            selectedStatus === "Pending" && "bg-blue-500 text-white"
-          }`}
-          onClick={() => handleFilter("Pending")}
-        >
-          Pending
-        </Button>
-        <Button
-          className={`mr-2 ${
-            selectedStatus === "Preparing" && "bg-blue-500 text-white"
-          }`}
-          onClick={() => handleFilter("Preparing")}
-        >
-          Preparing
-        </Button>
-        <Button
-          className={`mr-2 ${
-            selectedStatus === "Dispatch" && "bg-blue-500 text-white"
-          }`}
-          onClick={() => handleFilter("Dispatch")}
-        >
-          Dispatch
-        </Button>
-        <Button
-          className={`mr-2 ${
-            selectedStatus === "Completed" && "bg-blue-500 text-white"
-          }`}
-          onClick={() => handleFilter("Completed")}
-        >
-          Completed
-        </Button>
-        <Button
-          className={`mr-2 ${
-            selectedStatus === "Rejected" && "bg-blue-500 text-white"
-          }`}
-          onClick={() => handleFilter("Rejected")}
-        >
-          Rejected
-        </Button>
-        <Button
-          className={`mr-2 ${
-            selectedStatus === "Request Return" && "bg-blue-500 text-white"
-          }`}
-          onClick={() => handleFilter("Request Return")}
-        >
-          Request Return
-        </Button>
+        {statuses.map(status => {
+          return (<Button key={status}
+            className={`mr-4 ${selectedStatus === status && "bg-blue-500 text-white"
+              }`}
+            onClick={() => handleFilter(status)}
+          >
+            {status}
+          </Button>)
+        })}
       </div>
-      <Table columns={columns} dataSource={paginatedData} pagination={false} />
-      <div className="flex justify-center mt-4">
-        <Pagination
-          current={currentPage}
-          total={filteredData.length}
-          pageSize={pageSize}
-          onChange={handlePageChange}
-        />
-      </div>
+      <CustomTable columns={columns} list={filteredData} />
     </>
   );
 };

@@ -21,7 +21,6 @@ import UserManagement from "./pages/DashboardPages/UserManagement";
 import ErrorBoundary from "./components/common/Error";
 import ProductsPage from "./pages/ShoppingPages/ProductsPage";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import { UserLoader } from "./routes/userRoute";
 import SetNewPassword from "./auth/ForgotPassword/SetNewPassword";
 import Profile from "./pages/ProfillePages";
 import ResetToken from "./routes/ResetRoute/index.";
@@ -130,7 +129,6 @@ const router = createBrowserRouter([
           },
           {
             path: "users-management",
-            loader: UserLoader,
             shouldRevalidate: ({ currentUrl, nextUrl }) =>
               currentUrl.pathname !== nextUrl.pathname,
             element: <UserManagement />,
