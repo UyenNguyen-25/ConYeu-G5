@@ -23,6 +23,9 @@ import { Controller, useForm } from 'react-hook-form';
 // import { Checkbox } from 'antd';
 import { Checkbox, Form, Input, Select, Button, Modal } from "antd";
 import { apiGetPublicDistrict, apiGetPublicProvinces, apiGetPublicTown } from './ApiProvince';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 
 const AddAddress = ({setShippingAddress}) => {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -34,6 +37,8 @@ const AddAddress = ({setShippingAddress}) => {
     const [field, setField] = useState({});
     const [town, setTown] = useState('');
     const [towns, setTowns] = useState([]);
+    const userDetail = useSelector(selectCurrentUser);
+    const token = useSelector((state) => state.auth.token);
 
     const { handleSubmit, control, formState: { errors }, setValue } = useForm();
 
@@ -86,7 +91,7 @@ const AddAddress = ({setShippingAddress}) => {
         fetchPublicTowns();
     }, [district]);
 
-    const onFinish = (data) => {
+    const onFinish = async (data) => {
         const formData = {
             name: data.name,
             phone: data.phone,
@@ -95,8 +100,27 @@ const AddAddress = ({setShippingAddress}) => {
         };
         localStorage.setItem('shippingAddress', JSON.stringify(formData));
         console.log('Form data address:', formData);
-        setIsModalVisible(false);
+        // setIsModalVisible(false);
         setShippingAddress(formData)
+
+        try {
+            const response = await axios.post('/api/user/confirm-user-address', {
+                user_id: userDetail.user_id,
+                address: formData.fullAddress,
+                fullname: formData.name,
+                phoneNumber: formData.phone,
+                default: formData.remember,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log('API response:', response.data);
+            setIsModalVisible(false);
+        } catch (error) {
+            console.error('Error confirming user address:', error);
+        }
     };
     
     const handleProvinceChange = (value) => {

@@ -28,6 +28,7 @@ const OrderDetail = () => {
           }
         );
         setOrderDetails(response.data);
+        console.log('first', response.data)
 
         const productIds = response.data.order_items.map((item) => item.product_id);
         fetchProductDetails(productIds);
@@ -68,15 +69,20 @@ const OrderDetail = () => {
 
       const productDetails = responses.reduce((acc, response) => {
         const product = response.data.product; 
+        console.log('product', product)
         acc[product._id] = product; 
         return acc;
       }, {});
+
+      console.log('productDetails', productDetails)
 
       setProducts(productDetails);
     } catch (error) {
       console.error('Error fetching product details:', error);
     }
   };
+
+  console.log('productssss', products)
 
   if (!orderDetails || !paymentDetails) {
     return <div>Loading...</div>;
@@ -107,11 +113,11 @@ const OrderDetail = () => {
           {orderDetails.order_items.map((item) => (
             <div key={item._id} className='flex justify-between mb-4'>
               <div className='flex items-center'>
-                <img className='w-16 h-16' src={products[item.product_id].product_img}/>
+                <img className='w-16 h-16' src={products[item.product_id]?.product_img}/>
                 <div className='ml-4'>
                   <p className='font-semibold'>
                     {products[item.product_id]
-                      ? products[item.product_id].product_name
+                      ? products[item.product_id]?.product_name
                       : 'Loading...'}
                   </p>
                   <p className='text-sm text-gray-600'>x {item.quantity}</p>
