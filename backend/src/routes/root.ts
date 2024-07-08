@@ -7,6 +7,7 @@ import brandRoutes from "./brandRoute";
 import orderRoutes from "./orderRoutes";
 import onlineCheckoutRoutes from "./onlineCheckoutRoutes";
 import feedbackRoutes from "./feedbackRoutes";
+import paymentRoutes from "./paymentRoutes";
 
 const router: Router = Router();
 router.get("^/$|/app(.html)?", (req: Request, res: Response) => {
@@ -26,5 +27,8 @@ router.use("/api/order", orderRoutes);
 router.use("/api/momo", onlineCheckoutRoutes);
 
 router.use("/api/feedback", feedbackRoutes);
+
+router.use("/api/payment", paymentRoutes);
+
 
 export default router;

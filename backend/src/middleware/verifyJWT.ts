@@ -17,6 +17,7 @@ const verifyJWT = (req: any, res: any, next: NextFunction) => {
     req.user_phoneNumber = decoded.UserInfo.user_phoneNumber;
     req.user_fullname = decoded.UserInfo.user_fullname;
     req.user_role = decoded.UserInfo.user_role;
+    req.user_id = decoded.UserInfo.user_id;
     next();
   });
 };

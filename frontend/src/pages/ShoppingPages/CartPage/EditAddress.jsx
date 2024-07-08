@@ -27,8 +27,11 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 import { BASE_URL } from '@/constants/apiConfig';
+import { split } from 'postcss/lib/list';
 
-const AddAddress = ({setShippingAddress}) => {
+const { Option } = Select;
+
+const EditAddress = ({setShippingAddress, shippingAddress}) => {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [provinces, setProvinces] = useState([])
     const [districts, setDistricts] = useState([])
@@ -92,17 +95,20 @@ const AddAddress = ({setShippingAddress}) => {
         fetchPublicTowns();
     }, [district]);
 
+    const address_line1 = shippingAddress.address_line1.split(", ");
+    console.log('address_line1', address_line1)
+
     const onFinish = async (data) => {
         const formData = {
             name: data.name,
             phone: data.phone,
-            remember: data.remember,
+            isDefault: data.isDefault,
             fullAddress: `${data.address}, ${findTownNameById(data.town)}, ${findDistrictNameById(data.district)}, ${findProvinceNameById(data.province)}`
         };
-        localStorage.setItem('shippingAddress', JSON.stringify(formData));
+        // localStorage.setItem('shippingAddress', JSON.stringify(formData));
         console.log('Form data address:', formData);
         // setIsModalVisible(false);
-        setShippingAddress(formData)
+        
 
         try {
             const response = await axios.put(`${BASE_URL}/api/user/confirm-user-address`, {
@@ -118,6 +124,7 @@ const AddAddress = ({setShippingAddress}) => {
             });
 
             console.log('API response:', response.data);
+            setShippingAddress(response.data.updatedUser.address_id)
             setIsModalVisible(false);
         } catch (error) {
             console.error('Error confirming user address:', error);
@@ -162,10 +169,28 @@ const AddAddress = ({setShippingAddress}) => {
         return town ? town.ward_name : '';
     };
 
+    const findDistrictIdByName = (districtName) => {
+        const district = districts.find(dist => dist.district_name === districtName);
+        return district ? district.district_id : null; 
+    };
+
+    const findProvinceIdByName = (provinceName) => {
+        const province = provinces.find(prov => prov.province_name === provinceName);
+        return province ? province.province_id : null; 
+    };
+    
+    const findTownIdByName = (townName) => {
+        const town = towns.find(town => town.ward_name === townName);
+        return town ? town.ward_id : null; 
+    };
+    
+    const testProvince = findProvinceIdByName(address_line1[3])
+    console.log('testProvince', testProvince)
+
     return (
         <>
             <Button type="primary" onClick={showModal}>
-                XÁC NHẬN ĐỊA CHỈ NHẬN HÀNG
+                Thay đổi
             </Button>
             <Modal
                 title="Thêm Mới Địa Chỉ Nhận Hàng"
@@ -197,6 +222,7 @@ const AddAddress = ({setShippingAddress}) => {
                         <Controller
                             control={control}
                             name="name"
+                            defaultValue={shippingAddress.fullname}
                             render={({ field }) => <Input {...field} />}
                         />
                     </Form.Item>
@@ -216,6 +242,7 @@ const AddAddress = ({setShippingAddress}) => {
                         <Controller
                             control={control}
                             name="phone"
+                            defaultValue={shippingAddress.phoneNumber}
                             render={({ field }) => <Input {...field} />}
                         />
                     </Form.Item>
@@ -235,6 +262,7 @@ const AddAddress = ({setShippingAddress}) => {
                         <Controller
                             control={control}
                             name="address"
+                            defaultValue={address_line1[0]}
                             render={({ field }) => <Input {...field} />}
                         />
                     </Form.Item>
@@ -248,12 +276,13 @@ const AddAddress = ({setShippingAddress}) => {
                         <Controller
                             control={control}
                             name="province"
+                            defaultValue={findProvinceIdByName(address_line1[3])}
                             render={({ field }) => (
                                 <Select {...field} placeholder="Hãy chọn Tỉnh/ Thành phố" value={province} onChange={handleProvinceChange}>
                                     {provinces.map((prov) => (
-                                        <Select.Option key={prov.province_id} value={prov.province_id}>
+                                        <Option key={prov.province_id} value={prov.province_id}>
                                             {prov.province_name}
-                                        </Select.Option>
+                                        </Option>
 
                                     ))}
                                 </Select>
@@ -269,6 +298,7 @@ const AddAddress = ({setShippingAddress}) => {
                         <Controller
                             control={control}
                             name="district"
+                            defaultValue={findDistrictIdByName(address_line1[2])}
                             render={({ field }) => (
                                 <Select {...field} placeholder="Hãy chọn Quận/ Huyện!" value={district} onChange={handleDistrictChange}>
                                     {districts.map((dist) => (
@@ -289,6 +319,7 @@ const AddAddress = ({setShippingAddress}) => {
                         <Controller
                             control={control}
                             name="town"
+                            defaultValue={findTownIdByName(address_line1[1])}
                             render={({ field }) => (
                                 <Select {...field} placeholder="Hãy chọn Phường/ Xã!" value={town} onChange={handleTownChange}>
                                     {towns.map((town) => (
@@ -302,16 +333,16 @@ const AddAddress = ({setShippingAddress}) => {
                     </Form.Item>
 
                     <Form.Item
-                        name="remember"
-                        valuePropName="unchecked"
+                        name="isDefault"
+                        valuePropName="checked"
                         wrapperCol={{ offset: 8, span: 16 }}
                         className='col-start-1 col-end-3'
                     >
                         <Controller
                             control={control}
-                            name="remember"
-                            render={({ field }) => <Checkbox>Địa chỉ mặc định</Checkbox>}
-                            defaultValue=""
+                            name="isDefault"
+                            render={({ field }) => <Checkbox {...field}>Địa chỉ mặc định</Checkbox>}
+                            defaultValue={false}
                         />
                     </Form.Item>
                 </Form>
@@ -320,4 +351,4 @@ const AddAddress = ({setShippingAddress}) => {
     )
 }
 
-export default AddAddress
+export default EditAddress

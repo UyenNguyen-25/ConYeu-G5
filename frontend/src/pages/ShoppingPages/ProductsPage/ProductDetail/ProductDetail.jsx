@@ -2,17 +2,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BASE_URL } from "@/constants/apiConfig";
 import { addToCart } from "@/redux/features/cart/cartSlice";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { Alert } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import ProductReviews from "../components/ProductReviews";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [detail, setDetail] = useState();
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [alert, setAlert] = useState(false);
   const nav = useNavigate();
   const dispatch = useDispatch();
   const formatter = new Intl.NumberFormat("vi", {
@@ -156,6 +159,7 @@ const ProductDetail = () => {
                 src={detail?.product_img}
               />
             </div>
+            <ProductReviews product={detail}/>
           </div>
         )}
       </div>

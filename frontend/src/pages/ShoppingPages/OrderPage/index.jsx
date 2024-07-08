@@ -1,10 +1,11 @@
 import { Tabs } from 'antd'
 import React from 'react'
 import PendingOrder from './OrderTracking/PendingOrder'
-import PreparingOrder from './OrderTracking/PreparingOrder'
-import DeliveriedOrder from './OrderTracking/DeliveriedOrder'
+import ProcessingOrder from './OrderTracking/ProcessingOrder'
+import CompletedOrder from './OrderTracking/CompletedOrder'
 import CanceledOrder from './OrderTracking/CanceledOrder'
 import ReturnedOrder from './OrderTracking/ReturnedOrder'
+import DeliveringOrder from './OrderTracking/DeliveringOrder'
 
 const index = () => {
   return (
@@ -21,21 +22,26 @@ const index = () => {
           {
             label: 'Chờ Giao',
             key: '2',
-            children: <PreparingOrder/>,
+            children: <ProcessingOrder/>,
+          },
+          {
+            label: 'Đang Giao',
+            key: '3',
+            children: <DeliveringOrder/>,
           },
           {
             label: 'Đã Giao',
-            key: '3',
-            children: <DeliveriedOrder/>,
+            key: '4',
+            children: <CompletedOrder/>,
           },
           {
             label: 'Đã Hủy',
-            key: '4',
+            key: '5',
             children: <CanceledOrder/>,
           },
           {
             label: 'Trả Hàng',
-            key: '5',
+            key: '6',
             children: <ReturnedOrder/>,
           },
         ]}

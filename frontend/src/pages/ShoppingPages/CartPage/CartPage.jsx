@@ -34,10 +34,14 @@ import { useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
 import { emptyCart } from "@/assets/logo";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
+import EditAddress from "./EditAddress";
 
 const CartPage = () => {
   const nav = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const token = useSelector((state) => state.auth.token);
+  const userDetail = useSelector(selectCurrentUser);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [shippingAddress, setShippingAddress] = useState(null);
   const [text, setText] = React.useState("https://ant.design/");
   const cartItems = useSelector((state) => state.cart.items);
@@ -50,14 +54,50 @@ const CartPage = () => {
     (total, item) => total + item.product_price * item.quantity,
     0
   );
+  console.log(token)
+  console.log('user', userDetail)
+
+  // useEffect(() => {
+  //   const storedAddress = localStorage.getItem('shippingAddress');
+  //   console.log('storedAddress', storedAddress)
+  //   if (storedAddress) {
+  //     setShippingAddress(JSON.parse(storedAddress));
+  //   }
+  // }, []);
 
   useEffect(() => {
-    const storedAddress = localStorage.getItem('shippingAddress');
-    console.log('storedAddress', storedAddress)
-    if (storedAddress) {
-      setShippingAddress(JSON.parse(storedAddress));
+    if (userDetail.user_id) {
+      fetchShippingAddress();
     }
-  }, []);
+  }, [userDetail.user_id, token]);
+
+
+  const fetchShippingAddress = async () => {
+    console.log('userDetail.user_id', userDetail.user_id)
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/user/get-user-address`,
+        { user_id: userDetail.user_id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('response.data', response)
+      if (response.data) {
+        console.log('response.data', response.data)
+        setShippingAddress(response.data.address);
+      } else {
+        setShippingAddress(null);
+      }
+    } catch (error) {
+      console.error("Error fetching shipping address:", error);
+      setShippingAddress(null);
+    }
+  };
+
+  console.log('ShippingAddress', shippingAddress)
 
   const handleDecrease = (productId) => {
     dispatch(decreaseQuantity(productId));
@@ -76,16 +116,58 @@ const CartPage = () => {
   };
 
   const handlePayment = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/momo/payment`);
+    if (!shippingAddress) {
+      message.error("Vui lòng thêm địa chỉ giao hàng");
+      return;
+    }
 
-      if (response.data && response.data.payUrl) {
-        window.location.href = response.data.payUrl;
+    const orderItems = cartItems.map((item) => ({
+      product_id: item._id,
+      quantity: item.quantity,
+    }));
+
+    const orderData = {
+      user_id: userDetail.user_id,
+      order_items: orderItems,
+      payment_method: paymentMethod,
+      shippingAddress,
+    };
+    console.log('order data', orderData)
+
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/order/create-new-order`,
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.status === 201) {
+        if (paymentMethod === "COD") {
+          message.success("Đặt hàng thành công!");
+          nav(`/order-confirmation?orderId=${response.data._id}`);
+        } else if (paymentMethod === "momo") {
+          const momoData = {
+            orderId: response.data._id,
+            amount: response.data.total_money,
+          };
+          const momoResponse = await axios.post(`${BASE_URL}/api/momo/payment`, momoData);
+          if (momoResponse.data && momoResponse.data.payUrl) {
+            window.location.href = momoResponse.data.payUrl;
+          } else {
+            console.error("Thanh toán MoMo không thành công:", momoResponse.data);
+            message.error("Thanh toán MoMo không thành công");
+          }
+        }
       } else {
-        console.error('Thanh toán MoMo không thành công:', response.data);
+        message.error("Đặt hàng thất bại, vui lòng thử lại");
       }
     } catch (error) {
-      console.error('Lỗi khi xử lý thanh toán:', error);
+      console.error("Lỗi khi đặt hàng:", error);
+      message.error("Đặt hàng thất bại, vui lòng thử lại");
     }
   };
   return (
@@ -175,19 +257,18 @@ const CartPage = () => {
           </div>
           <div className="flex flex-col gap-6 w-1/3">
             <div className="rounded-lg bg-white p-6 shadow-lg">
-              {/* <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
-              <div className="bg-orange-600 flex justify-center gap-3 p-3 text-white rounded-lg">
-                <MapPin />
-                <AddAddress />
-              </div> */}
               {shippingAddress ? (
                 <>
-                  <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                    <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                    <EditAddress setShippingAddress={setShippingAddress} shippingAddress={shippingAddress}/>
                   <div className=" flex justify-center gap-3 p-3 rounded-lg">
                     <div>
-                      <p>{shippingAddress.name},</p>
-                      <p>{shippingAddress.phone},</p>
-                      <p>{shippingAddress.fullAddress}</p>
+                      {/* <p>{shippingAddress.address.fullname},</p>
+                      <p>{shippingAddress.address.phoneNumber},</p>
+                      <p>{shippingAddress.address.address_line1}</p> */}
+                      <p>{shippingAddress.fullname},</p>
+                      <p>{shippingAddress.phoneNumber},</p>
+                      <p>{shippingAddress.address_line1}</p>
                     </div>
                   </div>
                 </>
@@ -205,19 +286,25 @@ const CartPage = () => {
               <p className="font-bold mb-2">Phương thức thanh toán</p>
               <div>
                 <input
-                  type="checkbox"
-                  checked={paymentMethod === "cod"}
-                  onChange={() => setPaymentMethod("cod")}
-                />{" "}
+                  type="radio"
+                  id="COD"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={paymentMethod === "COD"}
+                  onChange={() => setPaymentMethod("COD")}
+                />
                 <span>Thanh toán khi nhận hàng</span>
               </div>
               <div>
                 <input
-                  type="checkbox"
-                  checked={paymentMethod === "vnpay"}
-                  onChange={() => setPaymentMethod("vnpay")}
-                />{" "}
-                <span>Thanh toán qua VN Pay</span>
+                  type="radio"
+                  id="momo"
+                  name="paymentMethod"
+                  value="momo"
+                  checked={paymentMethod === "momo"}
+                  onChange={() => setPaymentMethod("momo")}
+                />
+                <span>Thanh toán qua Momo</span>
               </div>
 
             </div>
