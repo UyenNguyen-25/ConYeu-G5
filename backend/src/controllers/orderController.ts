@@ -213,13 +213,15 @@ const getOrderByUserPhone: RequestHandler = asyncHandler(async (req: any, res: a
         // Tìm trạng thái đơn hàn
         const user = user_phoneNumber && await User.findOne({user_phoneNumber})
         
-        const query:any = {
-            query.user_id = user?._id
-        }
+        const query:any = {}
 
         if (from?.length>0 || to?.length>0) {
             query.createdAt= { $gte: new Date(from), $lte: new Date(to) }
-        }       
+        }
+
+        if (user) {
+            query.user_id = user._id
+        }else return res.status(200).json([])
 
         const orders = await Order.find(query)
             .populate("user_id","user_phoneNumber")
