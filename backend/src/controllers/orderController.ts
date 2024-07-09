@@ -204,19 +204,14 @@ const getOrderByStatusAndUserId: RequestHandler = asyncHandler(async (req: any, 
 
 });
 
-const getOrderByStatusAndUserPhone: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+const getOrderByUserPhone: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
     try {
-        const user_phoneNumber = req.query.phoneNumber ;
-        const status = req.query.status 
+        const user_phoneNumber = req.query.phoneNumber;
         const from = req.query.from
         const to = req.query.to
         
-        // Tìm trạng thái đơn hàng theo mô tả
-        const orderStatus = status && await OrderStatus.findOne({ order_status_description: status });
-        
+        // Tìm trạng thái đơn hàn
         const user = user_phoneNumber && await User.findOne({user_phoneNumber})
-        
-        console.log("from ", from, " to ", to);
         
         const query:any = {}
 
@@ -226,19 +221,24 @@ const getOrderByStatusAndUserPhone: RequestHandler = asyncHandler(async (req: an
 
         if (user) {
             query.user_id = user._id
-        }
+        }else return res.status(200).json([])
 
-        if (orderStatus) {
-            query.order_status_id = orderStatus?._id
-        }
-        
         const orders = await Order.find(query)
             .populate("user_id","user_phoneNumber")
             .populate('order_items')
             .populate('order_status_id')
             .exec();
         
-        res.status(200).json(orders);
+        const payments = await Payment.find()
+
+        const combineData = orders.map(order => {
+            // console.log(order._id);
+            const filterPayments = payments.find(payment => order._id.toString() === payment.order_id.toString())
+            // console.log(filterPayments);
+            return {order , payment: filterPayments}
+        })
+    
+        res.status(200).json(combineData);
     } catch (error) {
         console.error('Lỗi khi lấy đơn hàng:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -247,6 +247,6 @@ const getOrderByStatusAndUserPhone: RequestHandler = asyncHandler(async (req: an
 });
 
 
-const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId,getOrderByStatusAndUserPhone }
+const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId,getOrderByUserPhone }
 
 export default orderController;
