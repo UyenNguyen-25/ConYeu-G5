@@ -1,10 +1,8 @@
 import asyncHandler from 'express-async-handler';
 import e, { RequestHandler } from "express";
-import OrderStatus from '../models/OrderStatus';
 import axios from 'axios';
 import cryptoJS from 'crypto-js';
 import moment from 'moment';
-import uuid from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 import Payment from '../models/Payment';
 import Order from '../models/Order';
@@ -115,7 +113,6 @@ const callback: RequestHandler = asyncHandler(async (req: any, res: any): Promis
         if (!payment) {
             return res.status(400).json({ message: 'Payment not found' });
         }
-        req.session.orderId = req.body.orderId;
 
         // res.status(200).json(payment);
         res.redirect("/order-confirmation");
