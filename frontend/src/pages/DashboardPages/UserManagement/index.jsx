@@ -1,5 +1,4 @@
 import { useGetUsersQuery } from "@/redux/features/users/usersApiSlice";
-import { useUser } from "@/routes/userRoute";
 import { useEffect, useState } from "react";
 import { Button, Input } from "antd";
 import CreateAccount from "./CreateAccount";
@@ -9,16 +8,16 @@ const { Search } = Input;
 
 const UserManagement = () => {
   // eslint-disable-next-line no-unused-vars
-  const resultData = useUser();
   const [userList, setUserList] = useState([]);
   const [params, setParams] = useState({
-    search: resultData.search,
-    role: resultData.role,
+    search: "",
+    role: "employee",
   });
-  const [isActive, setIsActive] = useState({ bt1: true, bt2: false });
+  const [isActive, setIsActive] = useState(true);
 
   const { data: users, refetch, isLoading } = useGetUsersQuery(params, {
     refetchOnMountOrArgChange: true,
+    refetchOnFocus: true
   });
 
   const onSearch = (value) => {
@@ -27,7 +26,6 @@ const UserManagement = () => {
 
   useEffect(() => {
     setUserList(users);
-    console.log(users);
   }, [users]);
 
   return (
@@ -43,23 +41,24 @@ const UserManagement = () => {
           />
           <CreateAccount refetch={refetch} />
         </div>
-        <div className="flex-1 space-x-6">
+        <div className="flex-1 space-x-5">
           <Button
             onClick={() => {
-              setIsActive({ bt1: true, bt2: false });
+              setIsActive(true);
+              refetch()
               setParams((params) => ({ ...params, role: "employee" }));
             }}
-            type={`${isActive.bt1 ? "primary" : ""}`}
+            type={`${isActive ? "primary" : ""}`}
           >
             Employee
           </Button>
           <Button
             onClick={() => {
-              setIsActive({ bt1: false, bt2: true });
+              setIsActive(false);
               refetch()
               setParams((params) => ({ ...params, role: "customer" }));
             }}
-            type={`${isActive.bt2 ? "primary" : ""}`}
+            type={`${isActive ? "" : "primary"}`}
           >
             Customer
           </Button>
@@ -68,7 +67,7 @@ const UserManagement = () => {
           <TableComponent
             usersList={userList}
             isLoading={isLoading}
-            employeeBtn={isActive.bt1}
+            employeeBtn={isActive}
             refetch={refetch}
           />
         </div>

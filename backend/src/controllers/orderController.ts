@@ -7,6 +7,7 @@ import { error } from 'console';
 import mongoose from 'mongoose';
 import Payment from '../models/Payment';
 import Product from '../models/Product';
+import User from '../models/User';
 
 const autoCreateStatus: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
 
@@ -198,7 +199,51 @@ const getOrderByStatusAndUserId: RequestHandler = asyncHandler(async (req: any, 
 
 });
 
+const getOrderByStatusAndUserPhone: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+    try {
+        const user_phoneNumber = req.query.phoneNumber ;
+        const status = req.query.status 
+        const from = req.query.from
+        const to = req.query.to
+        
+        // Tìm trạng thái đơn hàng theo mô tả
+        const orderStatus = status && await OrderStatus.findOne({ order_status_description: status });
+        
+        const user = user_phoneNumber && await User.findOne({user_phoneNumber})
+            .populate("user_role", "role_description -_id")
+            .populate("address_id", "-_id")
+            .lean();
+        
+        console.log("from ", from, " to ", to);
+        
+        const query:any = {}
 
-const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId }
+        if (from || to) {
+            query.createdAt= { $gte: new Date(from), $lte: new Date(to) }
+        }
+
+        if (user) {
+            query.user_id = user._id
+        }
+
+        if (orderStatus) {
+            query.order_status_id = orderStatus?._id
+        }
+        
+        const orders = await Order.find(query)
+            .populate('order_items')
+            .populate('order_status_id')
+            .exec();
+        
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Lỗi khi lấy đơn hàng:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+});
+
+
+const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId,getOrderByStatusAndUserPhone }
 
 export default orderController;
