@@ -121,32 +121,39 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
     return res.status(201).json(order);
 });
 
+const findStatus = async (statusDescription: string): Promise<string> => {
+    try {
+        let orderStatus = await OrderStatus.findOne({ order_status_description: statusDescription });
+        if (!orderStatus) {
+            orderStatus = await OrderStatus.create({ order_status_description: statusDescription });
+        }
+        return orderStatus._id.toString(); 
+    } catch (error) {
+        console.log(error);
+        throw new Error('Error finding or creating order status');
+    }
+};
+
 
 const updateOrderStatus: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
     try {
-        const { statusUpdate } = req.body;
         const { orderId } = req.params;
-        //find order status by order_status_description
-        const orderstatus = await OrderStatus.findOne({
-            order_status_description: statusUpdate
-        });
-        if (!orderstatus) {
-            return res.status(400).json({ message: "No order status found" });
-        } else {
-            //get order status id
-            const idordertatus = orderstatus._id;
-            await Order.findByIdAndUpdate(
-                orderId,
-                { order_status_id: idordertatus }
-            );
-            const updateOrderStatus = await Order.findOne({ _id: orderId }).populate('order_status_id')
-            res.status(200).json({ message: "Update order status susscessfull" });
-            console.log(updateOrderStatus);
-            console.log(orderstatus);
-            console.log(idordertatus);
+        const { newStatus } = req.body;
+
+        const currentOrder = await Order.findById(orderId);
+        if (!currentOrder) {
+            return res.status(404).json({ message: "Order not found" });
         }
+
+        const newStatusId = await findStatus(newStatus);
+
+        await Order.findByIdAndUpdate(orderId, { order_status_id: newStatusId });
+
+        res.status(200).json({ message: "Update order status successfully" });
+
     } catch (error) {
         console.log(error);
+        res.status(500).json({ message: "Internal server error" });
     }
 
 });
@@ -173,14 +180,12 @@ const getOrderByStatusAndUserId: RequestHandler = asyncHandler(async (req: any, 
     const { userId, status } = req.body;
 
     try {
-        // Tìm trạng thái đơn hàng theo mô tả
         const orderStatus = await OrderStatus.findOne({ order_status_description: status });
 
         if (!orderStatus) {
             return res.status(404).json({ message: 'Không tìm thấy trạng thái đơn hàng.' });
         }
 
-        // Tìm tất cả đơn hàng của người dùng cụ thể với trạng thái đó
         const orders = await Order.find({ user_id: userId, order_status_id: orderStatus._id })
             .populate('order_items')
             .populate('order_status_id')

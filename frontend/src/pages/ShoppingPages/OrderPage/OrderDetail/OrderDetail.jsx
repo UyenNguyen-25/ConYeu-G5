@@ -83,6 +83,7 @@ const OrderDetail = () => {
   };
 
   console.log('productssss', products)
+  console.log('orderDetails', orderDetails)
 
   if (!orderDetails || !paymentDetails) {
     return <div>Loading...</div>;
@@ -166,9 +167,9 @@ const OrderDetail = () => {
             <p className='font-semibold'>Thông tin nhận hàng</p>
             <div className='mt-2'>
               <p className='font-semibold'>Địa chỉ</p>
-              <p className='mt-3'>{orderDetails.address.name}</p>
+              <p className='mt-3'>{orderDetails.address.fullname}</p>
               <p>{orderDetails.address.fullAddress}</p>
-              <p className='mt-3'>📞: {orderDetails.address.phone}</p>
+              <p className='mt-3'>📞: {orderDetails.address.phoneNumber}</p>
             </div>
           </div>
         </div>

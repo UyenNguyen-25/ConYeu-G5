@@ -26,7 +26,7 @@ const createNewFeedback: RequestHandler = asyncHandler(
 
             await newFeedback.save();
 
-            const product = await Product.findById(orderItem.product_id); // Giả sử orderItem có trường product_id
+            const product = await Product.findById(orderItem.product_id); 
             if (product) {
                 product.feedback_id.push(newFeedback._id);
                 await product.save();
