@@ -137,7 +137,7 @@ const PendingOrder = () => {
             </div>
             <hr className="w-full h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
             <div className='flex gap-10 justify-end mx-6 my-4'>
-              <Button type="primary" onClick={() => showModal(order._id)}>
+              <Button type="primary" className='bg-[#E44918]' onClick={() => showModal(order._id)}>
                 Hủy đơn
               </Button>
               <Modal title="Bạn có chắc chắn muốn hủy đơn hàng này?" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>

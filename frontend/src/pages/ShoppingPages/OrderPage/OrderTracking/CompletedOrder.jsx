@@ -5,7 +5,7 @@ import axios from 'axios';
 import { BASE_URL } from '@/constants/apiConfig';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/redux/features/auth/authSlice';
-import { Button, message, Modal } from 'antd';
+import { Button, message, Modal, Tag } from 'antd';
 import OrderReview from './components/order-review';
 
 const CompletedOrder = () => {
@@ -78,7 +78,7 @@ const CompletedOrder = () => {
             try {
               const productResponse = await axios.get(`${BASE_URL}/api/product/get-product-by-id/${item.product_id}`);
               console.log('productResponse', productResponse)
-              
+
               return {
                 ...item,
                 product: productResponse.data,
@@ -105,7 +105,7 @@ const CompletedOrder = () => {
   }, [token, userDetail.user_id]);
 
   const handleViewDetail = (orderId) => {
-    navigate(`/purchase/order-detail/${orderId}`);
+    navigate(`/order/order-detail/${orderId}`);
   };
 
   console.log('orders', orders)
@@ -144,8 +144,8 @@ const CompletedOrder = () => {
             <div className='flex gap-10 justify-end mx-6 my-4'>
               {/* <button className='bg-[#E44918] text-white px-2 py-1 hover:bg-[#ff7c55]' onClick={() => navigate('/write-feedback')}>Đánh giá</button> */}
 
-              {(order.user_id === userDetail.user_id) ? (
-                <p className='font-bold'>Đã đánh giá</p>
+              {order.order_items.some(item => item.product?.product.feedback_id.some(feedback => feedback.user_id === userDetail.user_id)) ? (
+                <Tag color="green">Đã đánh giá</Tag>
               ) : (
                 <>
                   <Button type="primary" onClick={() => showModal(order.order_items)}>

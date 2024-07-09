@@ -160,7 +160,7 @@ const CanceledOrder = () => {
     }, [token, userDetail.user_id]);
 
     const handleViewDetail = (orderId) => {
-        navigate(`/purchase/order-detail/${orderId}`);
+        navigate(`/order/order-detail/${orderId}`);
     };
 
     console.log('orders', orders)

@@ -10,7 +10,8 @@ const createNewFeedback: RequestHandler = asyncHandler(
             const {
                 order_items_id,
                 feedback_rating,
-                feedback_description
+                feedback_description,
+                user_id
             } = req.body;
 
             const orderItem = await OrderItem.findById(order_items_id);
@@ -21,6 +22,7 @@ const createNewFeedback: RequestHandler = asyncHandler(
             const newFeedback = new Feedback({
                 order_items_id,
                 feedback_rating,
+                user_id,
                 feedback_description,
             });
 

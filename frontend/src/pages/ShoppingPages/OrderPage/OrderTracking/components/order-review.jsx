@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Rate, Input, Button } from 'antd';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 
 const OrderReview = ({ orderItems, visible, onCancel, onOk }) => {
+  const userDetail = useSelector(selectCurrentUser);
   const [feedbackData, setFeedbackData] = useState([]);
   console.log('feedbackData', feedbackData)
 
@@ -11,6 +14,7 @@ const OrderReview = ({ orderItems, visible, onCancel, onOk }) => {
         order_items_id: item._id,
         feedback_rating: 5,
         feedback_description: '',
+        user_id: userDetail.user_id
       }))
     );
   }, [orderItems]);
@@ -42,7 +46,7 @@ const OrderReview = ({ orderItems, visible, onCancel, onOk }) => {
       onCancel={onCancel}
       footer={[
         <Button key="back" onClick={onCancel}>
-          TRỞ LẠI
+          Trở Lại
         </Button>,
         <Button key="submit" type="primary" onClick={handleOkClick}>
           Hoàn Thành
@@ -64,7 +68,14 @@ const OrderReview = ({ orderItems, visible, onCancel, onOk }) => {
               onChange={(value) => handleRatingChange(index, value)}
               value={feedbackData[index]?.feedback_rating}
             />
-            <span className="ml-2">{feedbackData[index]?.feedback_rating === 5 ? 'Tuyệt vời' : 'Chưa đánh giá'}</span>
+            <span className="ml-2">
+              {feedbackData[index]?.feedback_rating === 5 ? 'Tuyệt vời' :
+                feedbackData[index]?.feedback_rating === 4 ? 'Hài lòng' :
+                  feedbackData[index]?.feedback_rating === 3 ? 'Bình thường' :
+                    feedbackData[index]?.feedback_rating === 2 ? 'Không hài lòng' :
+                      feedbackData[index]?.feedback_rating === 1 ? 'Tệ' : 'Chưa đánh giá'}
+            </span>
+
           </div>
 
           <div className="mb-4">

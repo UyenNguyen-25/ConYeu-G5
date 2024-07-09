@@ -28,7 +28,6 @@ import ResetToken from "./routes/ResetRoute/index.";
 import CheckPermissionRoute from "./routes/CheckPermission";
 import OrderConfirmationPage from "./pages/ShoppingPages/OrderPage/OrderConfirmation";
 import OrderDetailUser from "./pages/ShoppingPages/OrderPage/OrderDetail/OrderDetail";
-import FeedbackPage from "./pages/ShoppingPages/FeedbackPage/feedbackPage";
 
 const router = createBrowserRouter([
   {
@@ -86,10 +85,6 @@ const router = createBrowserRouter([
           {
             path: "order-confirmation",
             element: <OrderConfirmationPage />,
-          },
-          {
-            path: "write-feedback",
-            element: <FeedbackPage />,
           },
         ],
       },
