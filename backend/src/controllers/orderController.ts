@@ -210,15 +210,12 @@ const getOrderByStatusAndUserPhone: RequestHandler = asyncHandler(async (req: an
         const orderStatus = status && await OrderStatus.findOne({ order_status_description: status });
         
         const user = user_phoneNumber && await User.findOne({user_phoneNumber})
-            .populate("user_role", "role_description -_id")
-            .populate("address_id", "-_id")
-            .lean();
         
         console.log("from ", from, " to ", to);
         
         const query:any = {}
 
-        if (from || to) {
+        if (from?.length>0 || to?.length>0) {
             query.createdAt= { $gte: new Date(from), $lte: new Date(to) }
         }
 
@@ -231,6 +228,7 @@ const getOrderByStatusAndUserPhone: RequestHandler = asyncHandler(async (req: an
         }
         
         const orders = await Order.find(query)
+            .populate("user_id","user_phoneNumber")
             .populate('order_items')
             .populate('order_status_id')
             .exec();
