@@ -86,13 +86,13 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { delivery } from '@/assets/logo';
 import axios from 'axios';
 import { BASE_URL } from '@/constants/apiConfig';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/redux/features/auth/authSlice';
+import { Button, Popover } from 'antd';
 
 const CanceledOrder = () => {
     const userDetail = useSelector(selectCurrentUser);
@@ -160,7 +160,7 @@ const CanceledOrder = () => {
     }, [token, userDetail.user_id]);
 
     const handleViewDetail = (orderId) => {
-        navigate(`/purchase/order-detail/${orderId}`);
+        navigate(`/order/order-detail/${orderId}`);
     };
 
     console.log('orders', orders)

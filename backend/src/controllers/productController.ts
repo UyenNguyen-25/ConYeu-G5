@@ -208,7 +208,7 @@ const get_product_by_id: RequestHandler = asyncHandler(
       // .populate("feedback_id", "feedback_rating feedback_description -_id")
       .populate({
         path: "feedback_id",
-        select: "feedback_rating feedback_description createdAt",
+        select: "feedback_rating feedback_description createdAt user_id",
       })
       .lean()
       .exec();

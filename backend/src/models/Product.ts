@@ -46,7 +46,7 @@ const ProductSchema = new mongoose.Schema(
     feedback_id: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Feedback",
-      default: null
+      default: []
     }]
   },
   { timestamps: true }

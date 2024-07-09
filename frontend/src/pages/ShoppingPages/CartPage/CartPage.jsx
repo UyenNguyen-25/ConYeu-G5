@@ -43,6 +43,7 @@ const CartPage = () => {
   const userDetail = useSelector(selectCurrentUser);
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [shippingAddress, setShippingAddress] = useState(null);
+  const [userAddress, setUserAddress] = useState(null);
   const [text, setText] = React.useState("https://ant.design/");
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
