@@ -202,11 +202,14 @@ const getOrderByStatusAndUserId: RequestHandler = asyncHandler(async (req: any, 
 const getOrderByUserPhone: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
     try {
         const user_phoneNumber = req.query.phoneNumber;
+        const status = req.query.status;
         const from = req.query.from
         const to = req.query.to
         
         // Tìm trạng thái đơn hàn
         const user = await User.findOne({user_phoneNumber})
+        
+        const orderStatus = await OrderStatus.findOne({ order_status_description: status });
         
         const query:any = {}
 
@@ -214,7 +217,12 @@ const getOrderByUserPhone: RequestHandler = asyncHandler(async (req: any, res: a
             query.createdAt= { $gte: new Date(from), $lte: new Date(to) }
         }
 
-        if ( user_phoneNumber?.length>0 || user) {
+        if ( status?.length >0 && orderStatus) {
+            query.order_status_id = orderStatus._id
+            if ( user_phoneNumber?.length >0 && user) {
+                query.user_id = user?._id
+        }
+        }else if ( user_phoneNumber?.length >0 || user) {
             query.user_id = user?._id
         }
 
@@ -223,7 +231,7 @@ const getOrderByUserPhone: RequestHandler = asyncHandler(async (req: any, res: a
             .populate('order_items')
             .populate('order_status_id')
             .exec();
-        
+
         const payments = await Payment.find()
 
         const combineData = orders.map(order => {

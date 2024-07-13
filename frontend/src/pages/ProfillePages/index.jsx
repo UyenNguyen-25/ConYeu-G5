@@ -20,7 +20,7 @@ const Profile = () => {
     const onFinish = async () => {
         try {
             const values = await form.validateFields()
-            const newData = { ...values, user_role: user.user_role.role_description }
+            const newData = { ...values, ...userDetail, user_role: user.user_role.role_description }
             // console.log(newData);
             await updateUser(newData).unwrap()
         } catch (error) {
@@ -78,7 +78,7 @@ const Profile = () => {
                             labelCol={{ span: 5 }}
                             wrapperCol={{ span: 16 }}
                             initialValues={
-                                { user_id: userDetail._id, user_fullname: userDetail.user_fullname, user_phoneNumber: userDetail.user_phoneNumber, address: userDetail.address_id.address_line1, default: true }
+                                { user_id: userDetail._id, user_fullname: userDetail.user_fullname, user_phoneNumber: userDetail.user_phoneNumber, address: userDetail.address_id.address_line1, isDefault: true }
                             }>
 
                             <Form.Item name={"user_id"} noStyle>

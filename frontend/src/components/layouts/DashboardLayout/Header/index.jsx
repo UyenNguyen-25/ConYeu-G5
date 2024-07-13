@@ -16,6 +16,7 @@ function Navbar() {
       label: "Hồ sơ",
       key: "/profile",
       icon: <User />,
+      permission: ["customer", "staff", "manager"]
     },
     {
       label: "ConYeu",

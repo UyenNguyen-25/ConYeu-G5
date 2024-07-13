@@ -33,6 +33,7 @@ function Header() {
       label: "Hồ sơ",
       key: "/profile",
       icon: <User />,
+      permission: ["customer", "staff", "manager"]
     },
     {
       label: "Dashboard",
@@ -44,6 +45,7 @@ function Header() {
       label: "Đơn mua",
       key: "purchase",
       icon: <ReceiptText />,
+      permission: ["customer", "staff", "manager"]
     },
     {
       label: "Đăng xuất",

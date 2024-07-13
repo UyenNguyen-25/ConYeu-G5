@@ -7,7 +7,6 @@ import TableComponent from "./table/table";
 const { Search } = Input;
 
 const UserManagement = () => {
-  // eslint-disable-next-line no-unused-vars
   const [userList, setUserList] = useState([]);
   const [params, setParams] = useState({
     search: "",
