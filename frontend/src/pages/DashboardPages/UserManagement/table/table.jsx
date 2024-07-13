@@ -13,7 +13,7 @@ const TableComponent = ({ usersList, isLoading, employeeBtn, refetch }) => {
   const user = useSelector(selectCurrentUser)
 
   const role = user?.user_role.role_description
-  console.log(role);
+  // console.log(role);
 
   return (
     <>

@@ -129,9 +129,10 @@ const CustomTable = ({ list, Loading, employeeBtn, role, refetch, currentUser })
   const save = async (key) => {
     try {
       const row = await form.validateFields();
-      const updateData = { ...row, user_status: row.user_status === "true", user_id: key };
+      const updateData = { ...row, user_role: row.user_role || "customer", user_status: row.user_status === "true", user_id: key };
+      console.log(updateData);
       await updateUser(updateData).unwrap()
-      setEditingKey("")
+      setTimeout(() => { setEditingKey("") }, 2000)
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
     }

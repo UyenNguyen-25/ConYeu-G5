@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '@/constants/apiConfig';
@@ -75,7 +75,7 @@ const OrderDetail = () => {
         return acc;
       }, {});
 
-      console.log('productDetails', productDetails)
+      // console.log('productDetails', productDetails)
 
       setProducts(productDetails);
     } catch (error) {

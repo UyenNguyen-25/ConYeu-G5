@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from "react-redux";
-import { QRCode, Space } from "antd";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -10,23 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { MapPin, Trash2 } from "lucide-react";
+import { MapPin } from "lucide-react";
 import {
   decreaseQuantity,
   increaseQuantity,
   removeFromCart,
 } from "@/redux/features/cart/cartSlice";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Button, message, Popconfirm } from "antd";
 import AddAddress from "./AddAddress";
 import { useNavigate } from "react-router-dom";
@@ -260,8 +249,8 @@ const CartPage = () => {
             <div className="rounded-lg bg-white p-6 shadow-lg">
               {shippingAddress ? (
                 <>
-                    <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
-                    <EditAddress setShippingAddress={setShippingAddress} shippingAddress={shippingAddress}/>
+                  <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
+                  <EditAddress setShippingAddress={setShippingAddress} shippingAddress={shippingAddress} />
                   <div className=" flex justify-center gap-3 p-3 rounded-lg">
                     <div>
                       {/* <p>{shippingAddress.address.fullname},</p>
