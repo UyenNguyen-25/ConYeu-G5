@@ -231,6 +231,7 @@ const confirmUserAddress: RequestHandler = asyncHandler(
     }
 
     if (requestUser?.address && requestUser.address.length > 0) {
+      console.log('vô tới đây')
       if (address?.address_line1 && address?.address_line1.length > 0) {
         if (requestUser.isDefault) {
           console.log("address1");

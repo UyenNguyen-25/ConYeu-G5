@@ -10,7 +10,8 @@ const createNewFeedback: RequestHandler = asyncHandler(
             const {
                 order_items_id,
                 feedback_rating,
-                feedback_description
+                feedback_description,
+                user_id
             } = req.body;
 
             const orderItem = await OrderItem.findById(order_items_id);
@@ -21,12 +22,13 @@ const createNewFeedback: RequestHandler = asyncHandler(
             const newFeedback = new Feedback({
                 order_items_id,
                 feedback_rating,
+                user_id,
                 feedback_description,
             });
 
             await newFeedback.save();
 
-            const product = await Product.findById(orderItem.product_id); // Giả sử orderItem có trường product_id
+            const product = await Product.findById(orderItem.product_id); 
             if (product) {
                 product.feedback_id.push(newFeedback._id);
                 await product.save();

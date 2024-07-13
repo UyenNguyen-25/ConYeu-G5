@@ -116,7 +116,7 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                 address: formData.fullAddress,
                 fullname: formData.name,
                 phoneNumber: formData.phone,
-                default: formData.remember,
+                isDefault: formData.isDefault,
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`

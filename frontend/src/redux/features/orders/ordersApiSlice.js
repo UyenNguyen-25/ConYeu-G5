@@ -19,9 +19,9 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
     updateOrderStatus: builder.mutation({
       query: (initialData) => ({
         url: `${ORDERS_URL}/update-order-status/${initialData.order_id}`,
-        method: "POST",
+        method: "PUT",
         body: {
-          statusUpdate: initialData.statusUpdate,
+          newStatus: initialData.statusUpdate,
         },
       }),
       invalidatesTags: [{ type: "Order", id: "LIST" }],
