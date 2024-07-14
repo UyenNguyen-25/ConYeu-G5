@@ -27,8 +27,9 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 import { BASE_URL } from '@/constants/apiConfig';
+import { MapPin } from 'lucide-react';
 
-const AddAddress = ({setShippingAddress}) => {
+const AddAddress = ({ setShippingAddress }) => {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [provinces, setProvinces] = useState([])
     const [districts, setDistricts] = useState([])
@@ -123,22 +124,22 @@ const AddAddress = ({setShippingAddress}) => {
             console.error('Error confirming user address:', error);
         }
     };
-    
+
     const handleProvinceChange = (value) => {
-        setProvince(value); 
-        setValue('province', value); 
+        setProvince(value);
+        setValue('province', value);
     };
 
     const handleDistrictChange = (value) => {
-        setDistrict(value); 
-        setValue('district', value); 
+        setDistrict(value);
+        setValue('district', value);
     };
 
     const handleTownChange = (value) => {
-        setTown(value); 
-        setValue('town', value); 
+        setTown(value);
+        setValue('town', value);
     };
-    
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -151,12 +152,12 @@ const AddAddress = ({setShippingAddress}) => {
         const province = provinces.find(prov => prov.province_id === provinceId);
         return province ? province.province_name : '';
     };
-    
+
     const findDistrictNameById = (districtId) => {
         const district = districts.find(dist => dist.district_id === districtId);
         return district ? district.district_name : '';
     };
-    
+
     const findTownNameById = (townId) => {
         const town = towns.find(town => town.ward_id === townId);
         return town ? town.ward_name : '';
@@ -164,8 +165,8 @@ const AddAddress = ({setShippingAddress}) => {
 
     return (
         <>
-            <Button type="primary" onClick={showModal}>
-                XÁC NHẬN ĐỊA CHỈ NHẬN HÀNG
+            <Button type="primary" className='bg-orange-600 text-white flex gap-2 h-14 justify-center items-center hover:bg-orange-400' onClick={showModal}>
+                <MapPin />XÁC NHẬN ĐỊA CHỈ NHẬN HÀNG
             </Button>
             <Modal
                 title="Thêm Mới Địa Chỉ Nhận Hàng"

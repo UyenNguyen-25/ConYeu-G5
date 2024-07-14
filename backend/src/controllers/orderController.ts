@@ -71,9 +71,12 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
 
 
     const orderItemIds = await Promise.all(order_items.map(async (item: any) => {
-        const product = await Product.findById(item.product_id).select('product_price');
+        const product = await Product.findById(item.product_id).select('product_price quantity');
         if (!product) {
             throw new Error(`Product with id ${item.product_id} not found`);
+        }
+        if (product.quantity < item.quantity) {
+            throw new Error(`Not enough quantity for product with id ${item.product_id}`);
         }
 
         const orderItem = new OrderItem({
@@ -82,6 +85,11 @@ const createOrder: RequestHandler = asyncHandler(async (req: any, res: any): Pro
             price: product.product_price
         });
         await orderItem.save();
+        console.log('first', product)
+        product.quantity -= item.quantity;
+        console.log('quantity after buy:', product.quantity)
+        await product.save();
+
         return orderItem._id;
     }));
 

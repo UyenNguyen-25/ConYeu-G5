@@ -15,5 +15,4 @@ export const statuses = [
   "Delivering",
   "Completed",
   "Cancelled",
-  "Request Return",
 ];

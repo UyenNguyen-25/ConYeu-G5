@@ -31,7 +31,7 @@ import { split } from 'postcss/lib/list';
 
 const { Option } = Select;
 
-const EditAddress = ({setShippingAddress, shippingAddress}) => {
+const EditAddress = ({ setShippingAddress, shippingAddress }) => {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [provinces, setProvinces] = useState([])
     const [districts, setDistricts] = useState([])
@@ -108,7 +108,7 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
         // localStorage.setItem('shippingAddress', JSON.stringify(formData));
         console.log('Form data address:', formData);
         // setIsModalVisible(false);
-        
+
 
         try {
             const response = await axios.put(`${BASE_URL}/api/user/confirm-user-address`, {
@@ -130,22 +130,25 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
             console.error('Error confirming user address:', error);
         }
     };
-    
+
     const handleProvinceChange = (value) => {
-        setProvince(value); 
-        setValue('province', value); 
+        setProvince(value);
+        setDistrict('');
+        setTown('');
+        setValue('province', value);
     };
 
     const handleDistrictChange = (value) => {
-        setDistrict(value); 
-        setValue('district', value); 
+        setDistrict(value);
+        setTown('');
+        setValue('district', value);
     };
 
     const handleTownChange = (value) => {
-        setTown(value); 
-        setValue('town', value); 
+        setTown(value);
+        setValue('town', value);
     };
-    
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -158,12 +161,12 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
         const province = provinces.find(prov => prov.province_id === provinceId);
         return province ? province.province_name : '';
     };
-    
+
     const findDistrictNameById = (districtId) => {
         const district = districts.find(dist => dist.district_id === districtId);
         return district ? district.district_name : '';
     };
-    
+
     const findTownNameById = (townId) => {
         const town = towns.find(town => town.ward_id === townId);
         return town ? town.ward_name : '';
@@ -171,19 +174,19 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
 
     const findDistrictIdByName = (districtName) => {
         const district = districts.find(dist => dist.district_name === districtName);
-        return district ? district.district_id : null; 
+        return district ? district.district_id : null;
     };
 
     const findProvinceIdByName = (provinceName) => {
         const province = provinces.find(prov => prov.province_name === provinceName);
-        return province ? province.province_id : null; 
+        return province ? province.province_id : null;
     };
-    
+
     const findTownIdByName = (townName) => {
         const town = towns.find(town => town.ward_name === townName);
-        return town ? town.ward_id : null; 
+        return town ? town.ward_id : null;
     };
-    
+
     const testProvince = findProvinceIdByName(address_line1[3])
     console.log('testProvince', testProvince)
 
@@ -276,9 +279,9 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="province"
-                            defaultValue={findProvinceIdByName(address_line1[3])}
+                            defaultValue={address_line1[3]}
                             render={({ field }) => (
-                                <Select {...field} placeholder="Hãy chọn Tỉnh/ Thành phố" value={province} onChange={handleProvinceChange}>
+                                <Select {...field} placeholder="Hãy chọn Tỉnh/ Thành phố" value={field.value} onChange={handleProvinceChange}>
                                     {provinces.map((prov) => (
                                         <Option key={prov.province_id} value={prov.province_id}>
                                             {prov.province_name}
@@ -290,6 +293,7 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         />
                     </Form.Item>
 
+
                     <Form.Item
                         label="Quận/ Huyện"
                         name="district"
@@ -298,11 +302,11 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="district"
-                            defaultValue={findDistrictIdByName(address_line1[2])}
+                            defaultValue={address_line1[2]}
                             render={({ field }) => (
-                                <Select {...field} placeholder="Hãy chọn Quận/ Huyện!" value={district} onChange={handleDistrictChange}>
+                                <Select {...field} placeholder="Hãy chọn Quận/ Huyện!" value={field.value} onChange={handleDistrictChange} defaultValue={findDistrictIdByName(address_line1[2])}>
                                     {districts.map((dist) => (
-                                        <Select.Option key={dist.district_id} value={dist.district_id}>
+                                        <Select.Option key={dist.district_id} value={dist.district_id} defaultValue={findDistrictIdByName(address_line1[2])}>
                                             {dist.district_name}
                                         </Select.Option>
                                     ))}
@@ -319,9 +323,9 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="town"
-                            defaultValue={findTownIdByName(address_line1[1])}
+                            defaultValue={town ? '' : address_line1[1]}
                             render={({ field }) => (
-                                <Select {...field} placeholder="Hãy chọn Phường/ Xã!" value={town} onChange={handleTownChange}>
+                                <Select {...field} placeholder="Hãy chọn Phường/ Xã!" value={field.value} onChange={handleTownChange}>
                                     {towns.map((town) => (
                                         <Select.Option key={town.ward_id} value={town.ward_id}>
                                             {town.ward_name}

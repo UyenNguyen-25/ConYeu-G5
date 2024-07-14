@@ -59,17 +59,17 @@ const router = createBrowserRouter([
           },
           {
             path: "purchase",
-            element: <CheckIsAdmin><OrderPage /></CheckIsAdmin>,
+            element: <OrderPage />,
           },
           // { path: "purchase/order-detail", element: <OrderDetail /> },
-          { path: "order/order-detail/:orderId", element: <CheckIsAdmin><OrderDetailUser /> </CheckIsAdmin> },
+          { path: "order/order-detail/:orderId", element: <OrderDetailUser /> },
           {
             path: "purchase/request-return",
-            element: <CheckIsAdmin><RequestReturn /></CheckIsAdmin>,
+            element: <RequestReturn />,
           },
           {
             path: "purchase/request-return/reason",
-            element: <CheckIsAdmin><ReasonReturn /></CheckIsAdmin>,
+            element: <ReasonReturn />,
           },
           {
             path: "cart",
@@ -86,7 +86,7 @@ const router = createBrowserRouter([
           },
           {
             path: "order-confirmation",
-            element: <CheckIsAdmin><OrderConfirmationPage /></CheckIsAdmin>,
+            element: <OrderConfirmationPage />,
           },
 
         ],

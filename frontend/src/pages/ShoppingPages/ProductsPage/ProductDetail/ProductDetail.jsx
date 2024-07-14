@@ -43,7 +43,7 @@ const ProductDetail = () => {
   }, [id]);
 
   const handleAddToCart = (product) => {
-    dispatch(addToCart({ ...product, quantity }));
+    dispatch(addToCart({ ...product, quantity, stock: product.quantity }));
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-right",
     });
@@ -62,8 +62,9 @@ const ProductDetail = () => {
   };
 
   const handleIncrease = () => {
-    setQuantity(quantity + 1);
-    console.log("handleIncrease");
+    if(quantity < detail.quantity) {
+      setQuantity(quantity + 1);
+    }
   };
   console.log("llllllllllllll", quantity);
 
@@ -112,6 +113,9 @@ const ProductDetail = () => {
                 <p className="text-xl">{detail?.product_name}</p>
                 <div className="bg-[#E7F3FF] py-4 pl-7 text-2xl font-bold">
                   {formatter.format(detail?.product_price)}
+                </div>
+                <div className="text-xl">
+                  Kho: {detail.quantity}
                 </div>
                 <div className="flex gap-x-10">
                   <p className="text-xl font-bold">Chọn số lượng</p>

@@ -113,7 +113,7 @@ const OrderDetail = () => {
           </div>
 
           {orderDetails.order_items.map((item) => (
-            <div key={item._id} className='flex justify-between mb-4'>
+            <div key={item._id} className='flex justify-between mb-4 cursor-pointer' onClick={() => nav(`/products/${item.product_id}`)}>
               <div className='flex items-center'>
                 <img className='w-16 h-16' src={products[item.product_id]?.product_img} />
                 <div className='ml-4'>
