@@ -28,6 +28,7 @@ import OrderConfirmationPage from "./pages/ShoppingPages/OrderPage/OrderConfirma
 import OrderDetailUser from "./pages/ShoppingPages/OrderPage/OrderDetail/OrderDetail";
 import Dashboard from "./pages/DashboardPages/Dashboard";
 import Prefetch from "./routes/Prefetch";
+import BrandManagement from "./pages/DashboardPages/BrandManagement";
 // import { UserLoader } from "./routes/userRoute";
 
 const router = createBrowserRouter([
@@ -142,6 +143,11 @@ const router = createBrowserRouter([
           {
             path: "orders-management",
             element: <OrderManagement />,
+            children: [],
+          },
+          {
+            path: "brands-management",
+            element: <BrandManagement />,
             children: [],
           },
           {

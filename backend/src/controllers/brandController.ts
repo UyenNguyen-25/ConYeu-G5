@@ -78,6 +78,18 @@ const deleteBrand: RequestHandler = asyncHandler(async (req: any, res: any): Pro
     }
 });
 
-const brandController = { createBrand, getAllBrand, getBrandById, updateBrand, deleteBrand };
+const countProductsByBrand : RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+    try {
+        const brandId = req.params.brandId;
+        const count = await Product.countDocuments({ product_brand_id: brandId });
+        
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error("Error counting products by brand:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+const brandController = { createBrand, getAllBrand, getBrandById, updateBrand, deleteBrand, countProductsByBrand };
 
 export default brandController;
