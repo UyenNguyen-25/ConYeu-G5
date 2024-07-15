@@ -9,6 +9,8 @@ import OrderItems from "./order-items";
 
 const CustomTable = ({ list, Loading, refetch }) => {
     const [data, setData] = useState()
+    // eslint-disable-next-line no-unused-vars
+    const [nextStatus, setNextStatus] = useState()
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
@@ -45,17 +47,19 @@ const CustomTable = ({ list, Loading, refetch }) => {
         if (value !== "accept" && value !== "reject") {
             const foundStatus = statuses.map((status, index) => {
                 if (status.toLowerCase() === value) {
-                    return statuses[index + 1].toLowerCase()
+                    return statuses[index + 1]
                 }
             }
             ).find(status => status)
 
-            console.log("foundStatus", foundStatus);
-
-            await updateOrderStatus({ statusUpdate: foundStatus, order_id: order_id })
+            // console.log("foundStatus", foundStatus);
+            setNextStatus(foundStatus)
+            await updateOrderStatus({ statusUpdate: foundStatus.toLowerCase(), order_id: order_id })
         } else if (value === "accept") {
+            setNextStatus("Processing")
             await updateOrderStatus({ statusUpdate: "processing", order_id: order_id })
         } else {
+            setNextStatus("Cancelled")
             await updateOrderStatus({ statusUpdate: "cancelled", order_id: order_id })
         }
     }
@@ -103,12 +107,14 @@ const CustomTable = ({ list, Loading, refetch }) => {
         {
             title: "Date",
             dataIndex: "createdAt",
-            render: (value) => format(new Date(value), "d/MM/yyy")
+            render: (value) => format(new Date(value), "d/MM/yyy h:mm a"),
+            sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         },
         {
             title: "Total Money",
             dataIndex: "total_money",
-            render: (value) => formatter.format(value)
+            render: (value) => formatter.format(value),
+            sorter: (a, b) => (a.total_money - b.total_money),
         },
         {
             title: "Status",
@@ -143,7 +149,7 @@ const CustomTable = ({ list, Loading, refetch }) => {
     ];
 
 
-    return <Table
+    return <><Table
         columns={columns}
         dataSource={data}
         onChange={handleTableChange}
@@ -186,6 +192,7 @@ const CustomTable = ({ list, Loading, refetch }) => {
             }
         }
     />
+    </>
 
 }
 

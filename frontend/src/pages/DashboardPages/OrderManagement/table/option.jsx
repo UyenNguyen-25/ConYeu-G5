@@ -5,7 +5,7 @@ export const statusColors = {
   processing: "blue",
   delivering: "orange",
   pending: "yellow",
-  "request return": "purple",
+  // "request return": "purple",
 };
 
 export const statuses = [
@@ -15,5 +15,5 @@ export const statuses = [
   "Delivering",
   "Completed",
   "Cancelled",
-  "Request Return",
+  // "Request Return",
 ];

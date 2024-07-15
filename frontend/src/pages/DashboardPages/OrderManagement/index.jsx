@@ -12,15 +12,18 @@ import { statuses } from "./table/option";
 const { RangePicker } = DatePicker;
 
 const OrderManagement = () => {
-  const [data, setData] = useState()
   const [filteredData, setFilteredData] = useState();
   const [selectedStatus, setSelectedStatus] = useState("All orders");
   const [query, setQuery] = useState({
     user_phoneNumber: "",
+    status: "",
     from: "",
     to: ""
   })
   const { data: orders, refetch, isLoading } = useGetOrdersQuery(query, {
+    pollingInterval: 2000,
+    skipPollingIfUnfocused: true,
+    refetchOnReconnect: true,
     refetchOnMountOrArgChange: true,
   })
 
@@ -33,18 +36,15 @@ const OrderManagement = () => {
       }
     })
     // console.log("initialData", initialData);
-    setData(initialData)
     setFilteredData(initialData)
   }, [orders])
 
   const handleFilterStatus = (status) => {
     setSelectedStatus(status);
     if (status === "All orders") {
-      setFilteredData(data);
+      setQuery(query => ({ ...query, status: "" }))
     } else {
-      setFilteredData(data.filter((order) => {
-        return order?.order_status_id?.order_status_description === status.toLowerCase()
-      }));
+      setQuery(query => ({ ...query, status: status.toLowerCase() }))
     }
   };
 
@@ -82,7 +82,7 @@ const OrderManagement = () => {
           </Button>)
         })}
       </div>
-      <CustomTable list={filteredData} Loading={isLoading} refetch={refetch} />
+      <CustomTable list={filteredData} Loading={isLoading} refetch={refetch} selectedStatus={selectedStatus} />
     </>
   );
 };

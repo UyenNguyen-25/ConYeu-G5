@@ -41,6 +41,7 @@ const Sidebar = () => {
     getItem("Users Management", "/dashboard/users-management", <Users size={20} />, [
       "admin",
       "manager",
+      "staff",
     ]),
   ];
 
