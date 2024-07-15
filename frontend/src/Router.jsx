@@ -26,7 +26,6 @@ import ResetToken from "./routes/ResetRoute/index.";
 import CheckPermissionRoute from "./routes/CheckPermission";
 import OrderConfirmationPage from "./pages/ShoppingPages/OrderPage/OrderConfirmation";
 import OrderDetailUser from "./pages/ShoppingPages/OrderPage/OrderDetail/OrderDetail";
-import CheckIsAdmin from "./routes/CheckPermission/checkIsAdmin";
 import Dashboard from "./pages/DashboardPages/Dashboard";
 import Prefetch from "./routes/Prefetch";
 // import { UserLoader } from "./routes/userRoute";
@@ -59,17 +58,17 @@ const router = createBrowserRouter([
           },
           {
             path: "purchase",
-            element: <CheckIsAdmin><OrderPage /></CheckIsAdmin>,
+            element: <OrderPage />,
           },
           // { path: "purchase/order-detail", element: <OrderDetail /> },
-          { path: "order/order-detail/:orderId", element: <CheckIsAdmin><OrderDetailUser /> </CheckIsAdmin> },
+          { path: "order/order-detail/:orderId", element: <OrderDetailUser /> },
           {
             path: "purchase/request-return",
-            element: <CheckIsAdmin><RequestReturn /></CheckIsAdmin>,
+            element: <RequestReturn />,
           },
           {
             path: "purchase/request-return/reason",
-            element: <CheckIsAdmin><ReasonReturn /></CheckIsAdmin>,
+            element: <ReasonReturn />,
           },
           {
             path: "cart",
@@ -82,11 +81,11 @@ const router = createBrowserRouter([
           },
           {
             path: "profile",
-            element: <CheckIsAdmin><Profile /></CheckIsAdmin>,
+            element: <Profile />,
           },
           {
             path: "order-confirmation",
-            element: <CheckIsAdmin><OrderConfirmationPage /></CheckIsAdmin>,
+            element: <OrderConfirmationPage />,
           },
 
         ],

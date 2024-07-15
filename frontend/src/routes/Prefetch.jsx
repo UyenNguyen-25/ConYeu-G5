@@ -19,7 +19,7 @@ const Prefetch = ({ children }) => {
 
     useEffect(() => {
         if (orders?.length > 0) {
-            toast.warning(`${orders?.length} orders is pending`, { duration: 20000 })
+            toast.warning(`${orders?.length} orders is pending`, { duration: 5000 })
         }
     }, [orders])
 
