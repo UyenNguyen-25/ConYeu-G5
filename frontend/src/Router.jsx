@@ -26,7 +26,6 @@ import ResetToken from "./routes/ResetRoute/index.";
 import CheckPermissionRoute from "./routes/CheckPermission";
 import OrderConfirmationPage from "./pages/ShoppingPages/OrderPage/OrderConfirmation";
 import OrderDetailUser from "./pages/ShoppingPages/OrderPage/OrderDetail/OrderDetail";
-import CheckIsAdmin from "./routes/CheckPermission/checkIsAdmin";
 import Dashboard from "./pages/DashboardPages/Dashboard";
 import Prefetch from "./routes/Prefetch";
 // import { UserLoader } from "./routes/userRoute";
@@ -82,7 +81,7 @@ const router = createBrowserRouter([
           },
           {
             path: "profile",
-            element: <CheckIsAdmin><Profile /></CheckIsAdmin>,
+            element: <Profile />,
           },
           {
             path: "order-confirmation",

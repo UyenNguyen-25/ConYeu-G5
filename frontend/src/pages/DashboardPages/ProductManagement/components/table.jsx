@@ -108,7 +108,7 @@ const TableProduct = ({ showEditModal, filteredData, setFilteredData }) => {
       title: "Action",
       key: "action",
       render: (text, record) => (
-        <Radio.Group>
+        <Radio.Group className="flex gap-2">
           <EditProduct
             product={record}
             onEditSuccess={fetchProducts}
@@ -116,12 +116,12 @@ const TableProduct = ({ showEditModal, filteredData, setFilteredData }) => {
             filteredData={filteredData}
           />
           <DetailProduct product={record} />
-          <Button
+          {/* <Button
             value="delete"
             icon={<DeleteOutlined />}
             onClick={() => showDeleteConfirm(record._id)}
             loading={deleteLoading && deleteProductId === record._id}
-          />
+          /> */}
         </Radio.Group>
       ),
     },

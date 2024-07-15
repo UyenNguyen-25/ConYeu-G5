@@ -41,10 +41,12 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
     const [field, setField] = useState({});
     const [town, setTown] = useState('');
     const [towns, setTowns] = useState([]);
+    const [isDefault, setIsDefault] = useState(false);
     const userDetail = useSelector(selectCurrentUser);
     const token = useSelector((state) => state.auth.token);
 
     const { handleSubmit, control, formState: { errors }, setValue } = useForm();
+    console.log(shippingAddress)
 
     useEffect(() => {
         const fetchPublicProvinces = async () => {
@@ -95,7 +97,7 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
         fetchPublicTowns();
     }, [district]);
 
-    const address_line1 = shippingAddress.address_line1.split(", ");
+    const address_line1 = shippingAddress?.address_line1?.split(", ") || [];
     console.log('address_line1', address_line1)
 
     const onFinish = async (data) => {
@@ -112,11 +114,11 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
 
         try {
             const response = await axios.put(`${BASE_URL}/api/user/confirm-user-address`, {
-                user_id: userDetail.user_id,
-                address: formData.fullAddress,
-                fullname: formData.name,
-                phoneNumber: formData.phone,
-                isDefault: formData.isDefault,
+                user_id: userDetail?.user_id,
+                address: formData?.fullAddress,
+                fullname: formData?.name,
+                phoneNumber: formData?.phone,
+                isDefault: formData?.isDefault,
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -124,7 +126,11 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
             });
 
             console.log('API response:', response.data);
-            setShippingAddress(response.data.updatedUser.address_id)
+            // setShippingAddress(...response.data.updatedUser.address_id, updatedAddress: isDefault ? 'address_line1' : 'address_line2')
+            setShippingAddress({
+                ...response.data.updatedUser.address_id,
+                updatedAddress: isDefault, // Thêm thuộc tính updatedAddress
+              });
             setIsModalVisible(false);
         } catch (error) {
             console.error('Error confirming user address:', error);
@@ -225,7 +231,7 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
                         <Controller
                             control={control}
                             name="name"
-                            defaultValue={shippingAddress.fullname}
+                            defaultValue={shippingAddress?.fullname}
                             render={({ field }) => <Input {...field} />}
                         />
                     </Form.Item>
@@ -245,12 +251,12 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
                         <Controller
                             control={control}
                             name="phone"
-                            defaultValue={shippingAddress.phoneNumber}
+                            defaultValue={shippingAddress?.phoneNumber}
                             render={({ field }) => <Input {...field} />}
                         />
                     </Form.Item>
 
-                    {errors.phone && <p className='text-red-600'>{errors.phone.message}</p>}
+                    {errors?.phone && <p className='text-red-600'>{errors.phone.message}</p>}
 
                     <Form.Item
                         label="Địa chỉ"
@@ -345,8 +351,8 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
                         <Controller
                             control={control}
                             name="isDefault"
-                            render={({ field }) => <Checkbox {...field}>Địa chỉ mặc định</Checkbox>}
-                            defaultValue={false}
+                            render={({ field }) => <Checkbox {...field} onChange={(e) => setIsDefault(e.target.checked)}>Địa chỉ mặc định</Checkbox>}
+                            defaultValue={isDefault}
                         />
                     </Form.Item>
                 </Form>

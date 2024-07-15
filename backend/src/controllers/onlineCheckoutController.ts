@@ -16,7 +16,7 @@ const createPayment: RequestHandler = asyncHandler(async (req: any, res: any): P
         var partnerCode = 'MOMO';
         // var redirectUrl = 'https://webhook.site/b3088a6a-2d17-4f8d-a383-71389a6c60';
         var redirectUrl = `http://localhost:5173/order-confirmation?orderId=${orderId}`;
-        var ipnUrl = 'https://ed46-115-73-131-38.ngrok-free.app/api/momo/callback';
+        var ipnUrl = 'https://bc65-118-69-182-144.ngrok-free.app/api/momo/callback';
         var requestType = "captureWallet";
         var requestId = orderId;
         var extraData = '';

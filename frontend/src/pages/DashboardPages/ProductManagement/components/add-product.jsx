@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Select, Button, Modal } from "antd";
 import { useForm, Controller } from "react-hook-form";
-import { UploadOutlined } from "@ant-design/icons";
+import { PlusCircleFilled, UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
 import { toast } from "sonner";
@@ -126,7 +126,7 @@ const AddProduct = ({ setFilteredData }) => {
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
+      <Button type="primary" icon={<PlusCircleFilled />} onClick={showModal}>
         Add Product
       </Button>
       <Modal
