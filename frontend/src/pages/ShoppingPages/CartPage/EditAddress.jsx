@@ -31,7 +31,7 @@ import { split } from 'postcss/lib/list';
 
 const { Option } = Select;
 
-const EditAddress = ({setShippingAddress, shippingAddress}) => {
+const EditAddress = ({ setShippingAddress, shippingAddress }) => {
     const [isModalVisible, setIsModalVisible] = React.useState(false);
     const [provinces, setProvinces] = useState([])
     const [districts, setDistricts] = useState([])
@@ -41,10 +41,12 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
     const [field, setField] = useState({});
     const [town, setTown] = useState('');
     const [towns, setTowns] = useState([]);
+    const [isDefault, setIsDefault] = useState(false);
     const userDetail = useSelector(selectCurrentUser);
     const token = useSelector((state) => state.auth.token);
 
     const { handleSubmit, control, formState: { errors }, setValue } = useForm();
+    console.log(shippingAddress)
 
     useEffect(() => {
         const fetchPublicProvinces = async () => {
@@ -95,7 +97,7 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
         fetchPublicTowns();
     }, [district]);
 
-    const address_line1 = shippingAddress.address_line1.split(", ");
+    const address_line1 = shippingAddress?.address_line1?.split(", ") || [];
     console.log('address_line1', address_line1)
 
     const onFinish = async (data) => {
@@ -108,15 +110,15 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
         // localStorage.setItem('shippingAddress', JSON.stringify(formData));
         console.log('Form data address:', formData);
         // setIsModalVisible(false);
-        
+
 
         try {
             const response = await axios.put(`${BASE_URL}/api/user/confirm-user-address`, {
-                user_id: userDetail.user_id,
-                address: formData.fullAddress,
-                fullname: formData.name,
-                phoneNumber: formData.phone,
-                isDefault: formData.isDefault,
+                user_id: userDetail?.user_id,
+                address: formData?.fullAddress,
+                fullname: formData?.name,
+                phoneNumber: formData?.phone,
+                isDefault: formData?.isDefault,
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -124,28 +126,35 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
             });
 
             console.log('API response:', response.data);
-            setShippingAddress(response.data.updatedUser.address_id)
+            // setShippingAddress(...response.data.updatedUser.address_id, updatedAddress: isDefault ? 'address_line1' : 'address_line2')
+            setShippingAddress({
+                ...response.data.updatedUser.address_id,
+                updatedAddress: isDefault, // Thêm thuộc tính updatedAddress
+              });
             setIsModalVisible(false);
         } catch (error) {
             console.error('Error confirming user address:', error);
         }
     };
-    
+
     const handleProvinceChange = (value) => {
-        setProvince(value); 
-        setValue('province', value); 
+        setProvince(value);
+        setDistrict('');
+        setTown('');
+        setValue('province', value);
     };
 
     const handleDistrictChange = (value) => {
-        setDistrict(value); 
-        setValue('district', value); 
+        setDistrict(value);
+        setTown('');
+        setValue('district', value);
     };
 
     const handleTownChange = (value) => {
-        setTown(value); 
-        setValue('town', value); 
+        setTown(value);
+        setValue('town', value);
     };
-    
+
     const showModal = () => {
         setIsModalVisible(true);
     };
@@ -158,12 +167,12 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
         const province = provinces.find(prov => prov.province_id === provinceId);
         return province ? province.province_name : '';
     };
-    
+
     const findDistrictNameById = (districtId) => {
         const district = districts.find(dist => dist.district_id === districtId);
         return district ? district.district_name : '';
     };
-    
+
     const findTownNameById = (townId) => {
         const town = towns.find(town => town.ward_id === townId);
         return town ? town.ward_name : '';
@@ -171,19 +180,19 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
 
     const findDistrictIdByName = (districtName) => {
         const district = districts.find(dist => dist.district_name === districtName);
-        return district ? district.district_id : null; 
+        return district ? district.district_id : null;
     };
 
     const findProvinceIdByName = (provinceName) => {
         const province = provinces.find(prov => prov.province_name === provinceName);
-        return province ? province.province_id : null; 
+        return province ? province.province_id : null;
     };
-    
+
     const findTownIdByName = (townName) => {
         const town = towns.find(town => town.ward_name === townName);
-        return town ? town.ward_id : null; 
+        return town ? town.ward_id : null;
     };
-    
+
     const testProvince = findProvinceIdByName(address_line1[3])
     console.log('testProvince', testProvince)
 
@@ -222,7 +231,7 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="name"
-                            defaultValue={shippingAddress.fullname}
+                            defaultValue={shippingAddress?.fullname}
                             render={({ field }) => <Input {...field} />}
                         />
                     </Form.Item>
@@ -242,12 +251,12 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="phone"
-                            defaultValue={shippingAddress.phoneNumber}
+                            defaultValue={shippingAddress?.phoneNumber}
                             render={({ field }) => <Input {...field} />}
                         />
                     </Form.Item>
 
-                    {errors.phone && <p className='text-red-600'>{errors.phone.message}</p>}
+                    {errors?.phone && <p className='text-red-600'>{errors.phone.message}</p>}
 
                     <Form.Item
                         label="Địa chỉ"
@@ -276,9 +285,9 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="province"
-                            defaultValue={findProvinceIdByName(address_line1[3])}
+                            defaultValue={address_line1[3]}
                             render={({ field }) => (
-                                <Select {...field} placeholder="Hãy chọn Tỉnh/ Thành phố" value={province} onChange={handleProvinceChange}>
+                                <Select {...field} placeholder="Hãy chọn Tỉnh/ Thành phố" value={field.value} onChange={handleProvinceChange}>
                                     {provinces.map((prov) => (
                                         <Option key={prov.province_id} value={prov.province_id}>
                                             {prov.province_name}
@@ -290,6 +299,7 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         />
                     </Form.Item>
 
+
                     <Form.Item
                         label="Quận/ Huyện"
                         name="district"
@@ -298,11 +308,11 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="district"
-                            defaultValue={findDistrictIdByName(address_line1[2])}
+                            defaultValue={address_line1[2]}
                             render={({ field }) => (
-                                <Select {...field} placeholder="Hãy chọn Quận/ Huyện!" value={district} onChange={handleDistrictChange}>
+                                <Select {...field} placeholder="Hãy chọn Quận/ Huyện!" value={field.value} onChange={handleDistrictChange} defaultValue={findDistrictIdByName(address_line1[2])}>
                                     {districts.map((dist) => (
-                                        <Select.Option key={dist.district_id} value={dist.district_id}>
+                                        <Select.Option key={dist.district_id} value={dist.district_id} defaultValue={findDistrictIdByName(address_line1[2])}>
                                             {dist.district_name}
                                         </Select.Option>
                                     ))}
@@ -319,9 +329,9 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="town"
-                            defaultValue={findTownIdByName(address_line1[1])}
+                            defaultValue={town ? '' : address_line1[1]}
                             render={({ field }) => (
-                                <Select {...field} placeholder="Hãy chọn Phường/ Xã!" value={town} onChange={handleTownChange}>
+                                <Select {...field} placeholder="Hãy chọn Phường/ Xã!" value={field.value} onChange={handleTownChange}>
                                     {towns.map((town) => (
                                         <Select.Option key={town.ward_id} value={town.ward_id}>
                                             {town.ward_name}
@@ -341,8 +351,8 @@ const EditAddress = ({setShippingAddress, shippingAddress}) => {
                         <Controller
                             control={control}
                             name="isDefault"
-                            render={({ field }) => <Checkbox {...field}>Địa chỉ mặc định</Checkbox>}
-                            defaultValue={false}
+                            render={({ field }) => <Checkbox {...field} onChange={(e) => setIsDefault(e.target.checked)}>Địa chỉ mặc định</Checkbox>}
+                            defaultValue={isDefault}
                         />
                     </Form.Item>
                 </Form>

@@ -1,7 +1,7 @@
 import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 import { ConfigProvider, Menu, Typography } from "antd";
 import Sider from "antd/es/layout/Sider";
-import { FileText, Home, Package, Users } from "lucide-react";
+import { FileText, Hexagon, Home, Package, Users } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -39,6 +39,11 @@ const Sidebar = () => {
       "staff",
     ]),
     getItem("Users Management", "/dashboard/users-management", <Users size={20} />, [
+      "admin",
+      "manager",
+      "staff",
+    ]),
+    getItem("Brand Management", "/dashboard/brands-management", <Hexagon size={20} />, [
       "admin",
       "manager",
       "staff",

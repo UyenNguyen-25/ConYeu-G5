@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -10,8 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { MapPin } from "lucide-react";
 import {
+  clearCart,
   decreaseQuantity,
   increaseQuantity,
   removeFromCart,
@@ -56,18 +56,18 @@ const CartPage = () => {
   // }, []);
 
   useEffect(() => {
-    if (userDetail.user_id) {
+    if (userDetail?.user_id) {
       fetchShippingAddress();
     }
-  }, [userDetail.user_id, token]);
+  }, [userDetail?.user_id, token]);
 
 
   const fetchShippingAddress = async () => {
-    console.log('userDetail.user_id', userDetail.user_id)
+    console.log('userDetail?.user_id', userDetail?.user_id)
     try {
       const response = await axios.post(
         `${BASE_URL}/api/user/get-user-address`,
-        { user_id: userDetail.user_id },
+        { user_id: userDetail?.user_id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -87,13 +87,23 @@ const CartPage = () => {
     }
   };
 
-  console.log('ShippingAddress', shippingAddress)
+  const fetchProductDetails = async (productId) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/product/get-product-by-id/${productId}`);
+      return response.data.product;
+    } catch (error) {
+      console.error(`Failed to fetch product details for product_id ${productId}`, error);
+      return null;
+    }
+  };
+
+  console.log('ShippingAddressssssssssssssss', shippingAddress)
 
   const handleDecrease = (productId) => {
     dispatch(decreaseQuantity(productId));
   };
 
-  const handleIncrease = (productId) => {
+  const handleIncrease = async (productId) => {
     dispatch(increaseQuantity(productId));
   };
 
@@ -117,10 +127,11 @@ const CartPage = () => {
     }));
 
     const orderData = {
-      user_id: userDetail.user_id,
+      user_id: userDetail?.user_id,
       order_items: orderItems,
       payment_method: paymentMethod,
       shippingAddress,
+      isDefaulf: shippingAddress?.updatedAddress
     };
     console.log('order data', orderData)
 
@@ -138,6 +149,7 @@ const CartPage = () => {
       if (response.status === 201) {
         if (paymentMethod === "COD") {
           message.success("Đặt hàng thành công!");
+          dispatch(clearCart());
           nav(`/order-confirmation?orderId=${response.data._id}`);
         } else if (paymentMethod === "momo") {
           const momoData = {
@@ -147,6 +159,7 @@ const CartPage = () => {
           const momoResponse = await axios.post(`${BASE_URL}/api/momo/payment`, momoData);
           if (momoResponse.data && momoResponse.data.payUrl) {
             window.location.href = momoResponse.data.payUrl;
+            dispatch(clearCart());
           } else {
             console.error("Thanh toán MoMo không thành công:", momoResponse.data);
             message.error("Thanh toán MoMo không thành công");
@@ -230,12 +243,11 @@ const CartPage = () => {
                       {formatter.format(item.product_price * item.quantity)}
                       <Popconfirm
                         className="ml-6"
-                        title="Delete the task"
-                        description="Are you sure to delete this item?"
+                        title="Xóa sản phẩm khỏi giỏ hàng?"
                         onConfirm={() => confirm(item._id)}
                         onCancel={cancel}
-                        okText="Yes"
-                        cancelText="No"
+                        okText="Ok"
+                        cancelText="Hủy"
                       >
                         <Button danger>Xóa</Button>
                       </Popconfirm>
@@ -247,33 +259,50 @@ const CartPage = () => {
           </div>
           <div className="flex flex-col gap-6 w-1/3">
             <div className="rounded-lg bg-white p-6 shadow-lg">
-              {shippingAddress ? (
+              {shippingAddress?.updatedAddress && shippingAddress?.address_line1?.length != 0 ? (
                 <>
-                  <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
-                  <EditAddress setShippingAddress={setShippingAddress} shippingAddress={shippingAddress} />
+                  <div className="flex gap-12">
+                    <h1 className="text-xl font-bold mb-2">Địa Chỉ Nhận Hàng</h1>
+                    <EditAddress setShippingAddress={setShippingAddress} shippingAddress={shippingAddress} />
+                  </div>
                   <div className=" flex justify-center gap-3 p-3 rounded-lg">
                     <div>
-                      {/* <p>{shippingAddress.address.fullname},</p>
-                      <p>{shippingAddress.address.phoneNumber},</p>
-                      <p>{shippingAddress.address.address_line1}</p> */}
-                      <p>{shippingAddress.fullname},</p>
-                      <p>{shippingAddress.phoneNumber},</p>
-                      <p>{shippingAddress.address_line1}</p>
+                      <div className="flex gap-2 mb-1">
+                        <p className="text-lg font-semibold">{shippingAddress?.fullname} | </p>
+                        <p className="text-lg text-orange-600 font-bold">{shippingAddress?.phoneNumber}</p>
+                      </div>
+                      <p>{shippingAddress?.address_line1}</p>
+                    </div>
+                  </div>
+                </>
+              ) : !shippingAddress?.updatedAddress && shippingAddress?.address_line2?.length != 0 ? (
+                <>
+                  <div className="flex gap-12">
+                    <h1 className="text-xl font-bold mb-2">Địa Chỉ Nhận Hàng</h1>
+                    <EditAddress setShippingAddress={setShippingAddress} shippingAddress={shippingAddress} />
+                  </div>
+                  <div className=" flex justify-center gap-3 p-3 rounded-lg">
+                    <div>
+                      <div className="flex gap-2 mb-1">
+                        <p className="text-lg font-semibold">{shippingAddress?.fullname} | </p>
+                        <p className="text-lg text-orange-600 font-bold">{shippingAddress?.phoneNumber}</p>
+                      </div>
+                      <p>{shippingAddress?.address_line2}</p>
                     </div>
                   </div>
                 </>
               ) : (
                 <>
                   <h1 className="text-xl font-bold mb-4">Địa Chỉ Nhận Hàng</h1>
-                  <div className="bg-orange-600 flex justify-center gap-3 p-3 text-white rounded-lg">
-                    <MapPin />
+                  <div className="flex justify-center gap-3 p-3">
                     <AddAddress setShippingAddress={setShippingAddress} />
                   </div>
                 </>
               )}
             </div>
+
             <div className="rounded-lg bg-white p-6 shadow-lg flex flex-col gap-2">
-              <p className="font-bold mb-2">Phương thức thanh toán</p>
+              <p className="text-xl font-bold mb-2">Phương thức thanh toán</p>
               <div>
                 <input
                   type="radio"
@@ -283,7 +312,7 @@ const CartPage = () => {
                   checked={paymentMethod === "COD"}
                   onChange={() => setPaymentMethod("COD")}
                 />
-                <span>Thanh toán khi nhận hàng</span>
+                <label htmlFor="COD" className="ml-2 cursor-pointer">Thanh toán khi nhận hàng</label>
               </div>
               <div>
                 <input
@@ -294,10 +323,10 @@ const CartPage = () => {
                   checked={paymentMethod === "momo"}
                   onChange={() => setPaymentMethod("momo")}
                 />
-                <span>Thanh toán qua Momo</span>
+                <label htmlFor="momo" className="ml-2 cursor-pointer">Thanh toán qua Momo</label>
               </div>
-
             </div>
+
             <div className="rounded-lg bg-white p-6 shadow-lg">
               <Table>
                 <TableBody className="text-lg">
@@ -306,7 +335,7 @@ const CartPage = () => {
                     <TableCell>{formatter.format(temporaryTotal)}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell className="text-[#8B8B8B]">Tính tạm</TableCell>
+                    <TableCell className="text-[#8B8B8B]">Phí vận chuyển</TableCell>
                     <TableCell>+{formatter.format(0)}</TableCell>
                   </TableRow>
                   <TableRow>
@@ -316,7 +345,7 @@ const CartPage = () => {
                 </TableBody>
               </Table>
               <button className="bg-[#007AFB] hover:bg-blue-700 text-white rounded-lg w-full py-3 font-semibold mt-4" onClick={handlePayment}>
-                TIẾP TỤC
+                ĐẶT HÀNG
               </button>
             </div>
           </div>

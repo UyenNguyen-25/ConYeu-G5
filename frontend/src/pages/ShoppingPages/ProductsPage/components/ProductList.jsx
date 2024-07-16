@@ -26,17 +26,27 @@ const ProductList = ({ product }) => {
               <p className="font-bold my-4 text-base">
                 {formatter.format(item.product_price)}
               </p>
-              <p className="my-4 line-through text-xs">
-                {formatter.format(
-                  Math.floor(
-                    item.product_price / (1 - item.product_price_discount / 100)
-                  )
-                )}
-              </p>
+              {
+                item.product_price_discount > 0 && (
+                  <p className="my-4 line-through text-xs">
+                    {formatter.format(
+                      Math.floor(
+                        item.product_price / (1 - item.product_price_discount / 100)
+                      )
+                    )}
+                  </p>
+                )
+              }
+
               <div className="flex flex-grow"></div>
-              <p className="font-bold my-4 text-[#E44918]">
-                -{item.product_price_discount}%
-              </p>
+              {
+                item.product_price_discount > 0 && (
+                  <p className="font-bold my-4 text-[#E44918]">
+                    -{item.product_price_discount}%
+                  </p>
+                )
+              }
+
             </div>
           </div>
         </div>

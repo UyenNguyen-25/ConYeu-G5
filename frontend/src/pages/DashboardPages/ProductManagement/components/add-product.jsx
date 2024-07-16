@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Select, Button, Modal } from "antd";
 import { useForm, Controller } from "react-hook-form";
-import { UploadOutlined } from "@ant-design/icons";
+import { PlusCircleFilled, UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/apiConfig";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ const AddProduct = ({ setFilteredData }) => {
     myFile: null,
     base64String: "",
   });
+  const [form] = Form.useForm();
   const {
     handleSubmit,
     control,
@@ -54,7 +55,19 @@ const AddProduct = ({ setFilteredData }) => {
       ...data,
       product_img: postImage.base64String,
     };
-    console.log("form data", formData);
+    // const validFields = await form.validateFields();
+    //   const Data = {
+    //     product_name: validFields?.product_name,
+    //     product_type: validFields?.product_type,
+    //     product_brand_id: validFields?.product_brand_id,
+    //     product_age: validFields?.product_age,
+    //     product_price: validFields?.product_price,
+    //     quantity: validFields.quantity,
+    //     product_description: validFields.product_description,
+    //     product_status: validFields.product_status,
+    //     product_img: validFields.product_img
+    //   };
+    // console.log("form data", Data);
     try {
       const response = await axios.post(
         `${BASE_URL}/api/product/create-product`,
@@ -69,13 +82,15 @@ const AddProduct = ({ setFilteredData }) => {
       // message.success('Product created successfully!');
       // console.log('Form data:', formData);
       setFilteredData((prevData) => [...prevData, response.data.data]);
-      toast.success("Thêm vào giỏ hàng thành công!", {
+      toast.success("Thêm mới sản phẩm thành công!", {
         position: "top-right",
       });
       handleCancel();
     } catch (error) {
       console.log(error);
-      res.status(500).json("Internal server error")
+      toast.error("Thêm mới sản phẩm thất bại!", {
+        position: "top-right",
+      });
     }
     
   };
@@ -88,6 +103,7 @@ const AddProduct = ({ setFilteredData }) => {
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    form.resetFields();
   };
 
   const convertToBase64 = (file) => {
@@ -110,7 +126,7 @@ const AddProduct = ({ setFilteredData }) => {
 
   return (
     <>
-      <Button type="primary" onClick={showModal}>
+      <Button type="primary" icon={<PlusCircleFilled />} onClick={showModal}>
         Add Product
       </Button>
       <Modal
@@ -126,7 +142,7 @@ const AddProduct = ({ setFilteredData }) => {
           </Button>,
         ]}
       >
-        <Form layout="vertical" onFinish={handleSubmit(onFinish)}>
+        <Form form={form} layout="vertical" onFinish={handleSubmit(onFinish)}>
           <Form.Item
             label="Product Name"
             name="product_name"

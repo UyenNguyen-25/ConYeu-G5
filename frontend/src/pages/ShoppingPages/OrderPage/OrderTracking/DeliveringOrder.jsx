@@ -159,7 +159,7 @@ const DeliveringOrder = () => {
                 Đã nhận hàng
               </Button>
               <Modal title="Bạn có chắc chắn đã nhận đơn hàng này?" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                <p>Bạn sẽ không thể không thể thực hiện hoàn hàng/hoàn tiền sau khi ấn xác nhận.</p>
+                <p>Bạn vui lòng chỉ nhấn OK khi đã nhận được sản phẩm và sản phẩm không có vấn đề nào.</p>
               </Modal>
               <p className='font-bold'>Tổng</p>
               <h1 className='font-bold text-[#E44918]'>{formatter.format(order.total_money)}</h1>
