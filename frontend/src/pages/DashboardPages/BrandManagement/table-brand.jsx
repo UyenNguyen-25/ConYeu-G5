@@ -60,6 +60,7 @@ const TableBrand = ({ showEditModal, filteredData, setFilteredData }) => {
             title: "Number of Products",
             dataIndex: "num_products",
             key: "num_products",
+            sorter: (a, b) => a.num_products - b.num_products
         },
         {
             title: "Action",

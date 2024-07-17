@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ProductReviews from "../components/ProductReviews";
+import { soldout } from "@/assets/logo";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -62,7 +63,7 @@ const ProductDetail = () => {
   };
 
   const handleIncrease = () => {
-    if(quantity < detail.quantity) {
+    if (quantity < detail.quantity) {
       setQuantity(quantity + 1);
     }
   };
@@ -114,9 +115,18 @@ const ProductDetail = () => {
                 <div className="bg-[#E7F3FF] py-4 pl-7 text-2xl font-bold">
                   {formatter.format(detail?.product_price)}
                 </div>
-                <div className="text-xl">
+                {/* <div className="text-xl">
+                  Kho: {detail.quantity > 0 ? detail.quantity : <img className="w-1/2" src={soldout}/>}
+                </div> */}
+                {
+                  detail.quantity > 0 ? (
+                    <div className="text-xl">
                   Kho: {detail.quantity}
                 </div>
+                  ) : (
+                    <img className="w-1/2" src={soldout}/>
+                  )
+                }
                 <div className="flex gap-x-10">
                   <p className="text-xl font-bold">Chọn số lượng</p>
                   <div className="flex gap-x-0">
@@ -140,13 +150,15 @@ const ProductDetail = () => {
                 <div className="flex gap-x-6">
                   <button
                     className="bg-[#007AFB] px-9 py-3 text-xl text-white rounded-2xl hover:bg-blue-400"
-                    onClick={() => handleAddToCart(detail)}
+                    onClick={() => handleAddToCart(detail)} 
+                    disabled={detail.quantity === 0}
                   >
                     Thêm vào giỏ
                   </button>
                   <button
                     className="bg-[#5B5E62] px-9 py-3 text-xl text-white rounded-2xl hover:bg-gray-500"
                     onClick={() => handleBuyNow(detail)}
+                    disabled={detail.quantity === 0}
                   >
                     Mua ngay
                   </button>
@@ -163,7 +175,7 @@ const ProductDetail = () => {
                 src={detail?.product_img}
               />
             </div>
-            <ProductReviews product={detail}/>
+            <ProductReviews product={detail} />
           </div>
         )}
       </div>

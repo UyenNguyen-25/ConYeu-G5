@@ -37,6 +37,20 @@ const getAllUsers: RequestHandler = asyncHandler(
   }
 );
 
+const getAllUser: RequestHandler = asyncHandler(
+  async (req, res): Promise<any> => {
+    const users = await User.find()
+      .populate("user_role", "role_description -_id")
+      .populate("address_id", "-_id")
+      .lean();
+
+    if (!users?.length) {
+      return res.status(404).json({ message: "No users found" });
+    }
+    res.status(200).json(users);
+  }
+);
+
 const getUserDetail: RequestHandler = asyncHandler(
   async (req, res): Promise<any> => {
     try {
@@ -360,6 +374,7 @@ const changePassword: RequestHandler = asyncHandler(
 
 const userController = {
   getAllUsers,
+  getAllUser,
   createNewUser,
   updateUser,
   deleteUser,

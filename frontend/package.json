@@ -41,6 +41,7 @@
     "next-themes": "^0.3.0",
     "otp-timer-ts": "^3.0.1",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.52.0",
     "react-otp-input": "^3.1.1",
