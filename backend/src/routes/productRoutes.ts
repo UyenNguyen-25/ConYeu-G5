@@ -29,6 +29,10 @@ router
   .route("/delete-product/:product_id")
   .delete(productController.delete_product);
 
+router
+  .route("/get-sold-product")
+  .get(productController.getSoldProductsByType)
+
 const productRoutes = router;
 
 export default productRoutes;
