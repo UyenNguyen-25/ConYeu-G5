@@ -225,22 +225,17 @@ const getSoldProductsByType : RequestHandler = asyncHandler(
   async (req, res): Promise<any> => {
     try {
       const soldProducts = await OrderItem.aggregate([
-        // Match orders where product_id exists (inner join with Product)
         { $match: { product_id: { $exists: true } } },
-        // Lookup product details from Product collection
         {
           $lookup: {
-            from: 'products',  // Mongoose pluralizes the collection name
+            from: 'products',
             localField: 'product_id',
             foreignField: '_id',
             as: 'product'
           }
         },
-        // Unwind the product array (since $lookup returns an array)
         { $unwind: '$product' },
-        // Match products that are sold (quantity > 0)
         { $match: { 'product.quantity': { $gt: 0 } } },
-        // Group by product_type and sum up the quantities
         {
           $group: {
             _id: '$product.product_type',

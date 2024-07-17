@@ -39,6 +39,20 @@ const Dashboard = () => {
     product: true,
     brand: true
   });
+  const getTypeName = (type) => {
+    switch (type) {
+      case "type1":
+        return "Sữa bột pha sẳn";
+      case "type2":
+        return "Sữa bột công thức";
+      case "type3":
+        return "Sữa tươi";
+      case "type4":
+        return "Sữa hạt dinh dưỡng";
+      default:
+        return type;
+    }
+  };
   const chart = () => {
     const labelList = orderData?.map((data) => data?._id?.month);
     const dataValue = orderData?.map((data) => data?.totalOrders);
@@ -59,7 +73,7 @@ const Dashboard = () => {
   };
   const chart2 = () => {
     setDoughnutData({
-      labels: productData?.map(data => data?._id),
+      labels: productData?.map(data => getTypeName(data?._id)),
       datasets: [
         {
           label: 'Sold Products by Type',
