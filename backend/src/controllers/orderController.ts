@@ -184,10 +184,10 @@ const updateOrderStatus: RequestHandler = asyncHandler(
       if (newStatus === "cancelled") {
         const order = await Order.findById(orderId);
         order?.order_items.map(async (item) => {
-          console.log(item);
+          //   console.log(item);
           const orderItem = await OrderItem.findById(item?._id);
           const product = await Product.findById(orderItem?.product_id);
-          console.log("product_id", product?._id);
+          //   console.log("product_id", product?._id);
 
           const increaseQuantity = orderItem!.quantity + product!.quantity;
           await Product.findByIdAndUpdate(orderItem?.product_id, {
