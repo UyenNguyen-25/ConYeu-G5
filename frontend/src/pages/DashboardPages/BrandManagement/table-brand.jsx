@@ -22,7 +22,12 @@ const TableBrand = ({ showEditModal, filteredData, setFilteredData }) => {
     const fetchBrands = async () => {
         try {
             const response = await axios.get(
-                `${BASE_URL}/api/brand/get-all-brand`
+                `${BASE_URL}/api/brand/get-all-brand`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
             );
             const brandsWithProductsCount = await Promise.all(
                 response.data.map(async (brand) => {
@@ -45,9 +50,10 @@ const TableBrand = ({ showEditModal, filteredData, setFilteredData }) => {
         } catch (error) {
             console.error("Error fetching products:", error);
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
+    console.log('brand', brands)
 
     const columns = [
         {

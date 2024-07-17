@@ -2,13 +2,26 @@ import { BASE_URL } from "@/constants/apiConfig";
 import { useGetUserQuery, useGetUsersQuery } from "@/redux/features/users/usersApiSlice";
 import { Typography } from "antd";
 import axios from "axios";
-import { CategoryScale } from "chart.js";
+import { ArcElement, BarElement, CategoryScale, Legend, LinearScale, LineController, LineElement, PointElement, Title, Tooltip } from "chart.js";
 import { useEffect, useRef, useState } from "react";
-import { Bar } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 import Chart from "chart.js/auto";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-Chart.register(CategoryScale);
+// Chart.register(ChartDataLabels);
+Chart.register(
+  LineController,
+  LineElement,
+  BarElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  ArcElement,
+  Legend,
+  Title,
+)
 
 const Dashboard = () => {
   const token = useSelector((state) => state.auth.token);
@@ -17,12 +30,60 @@ const Dashboard = () => {
   const [product, setProduct] = useState([]);
   const [brand, setBrand] = useState([]);
   const [orderData, setOrderData] = useState([]);
+  const [productData, setProductData] = useState([]);
+  const [chartData, setChartData] = useState({});
+  const [doughnutData, setDoughnutData] = useState({});
   const [loading, setLoading] = useState({
     user: true,
     order: true,
     product: true,
     brand: true
   });
+  const getTypeName = (type) => {
+    switch (type) {
+      case "type1":
+        return "Sữa bột pha sẳn";
+      case "type2":
+        return "Sữa bột công thức";
+      case "type3":
+        return "Sữa tươi";
+      case "type4":
+        return "Sữa hạt dinh dưỡng";
+      default:
+        return type;
+    }
+  };
+  const chart = () => {
+    const labelList = orderData?.map((data) => data?._id?.month);
+    const dataValue = orderData?.map((data) => data?.totalOrders);
+    setChartData({
+      labels: labelList,
+      datasets: [
+        {
+          label: "Number of order ",
+          data: dataValue,
+          backgroundColor: [
+            "#5932EA"
+          ],
+          borderWidth: 2
+        }
+      ]
+    })
+
+  };
+  const chart2 = () => {
+    setDoughnutData({
+      labels: productData?.map(data => getTypeName(data?._id)),
+      datasets: [
+        {
+          label: 'Sold Products by Type',
+          data: productData?.map(data => data?.totalQuantity),
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+          borderWidth: 1,
+        },
+      ],
+    });
+  }
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
@@ -31,80 +92,56 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        console.log('order data', response.data)
         setOrderData(response.data);
       } catch (error) {
         console.error("Error fetching order data:", error);
       }
     };
+    const fetchProductData = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/product/get-sold-product`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setProductData(response.data)
+      } catch (error) {
+        console.error("Error fetching doughnut data:", error);
+      }
+    };
 
     fetchOrderData();
+    fetchProductData();
   }, [token]);
-  const Data = [
-    {
-      id: 1,
-      year: 2016,
-      userGain: 80000,
-      userLost: 823
-    },
-    {
-      id: 2,
-      year: 2017,
-      userGain: 45677,
-      userLost: 345
-    },
-    {
-      id: 3,
-      year: 2018,
-      userGain: 78888,
-      userLost: 555
-    },
-    {
-      id: 4,
-      year: 2019,
-      userGain: 90000,
-      userLost: 4555
-    },
-    {
-      id: 5,
-      year: 2020,
-      userGain: 4300,
-      userLost: 234
-    }
-  ];
   const chartRef = useRef(null);
-  console.log(orderData.map((data) => data._id.month))
-  console.log(orderData.map((data) => data.totalOrders))
-  
-  const [chartData, setChartData] = useState({
-    labels: orderData.map((data) => data._id.month), 
-    // labels: [7], 
-    datasets: [
-      {
-        label: "Number of order ",
-        data: orderData.map((data) => data.totalOrders),
-        // data: [20],
-        backgroundColor: [
-          "rgba(75,192,192,1)",
-          "&quot;#ecf0f1",
-          "#50AF95",
-          "#f3ba2f",
-          "#2a71d0"
-        ],
-        borderColor: "black",
-        borderWidth: 2
-      }
-    ]
-  });
+  const chartRef2 = useRef(null);
+
   useEffect(() => {
     const chartInstance = chartRef.current;
 
     return () => {
       if (chartInstance) {
-        chartInstance.destroy(); 
+        chartInstance.destroy();
       }
     };
   }, [chartData]);
+  useEffect(() => {
+    const chartInstance2 = chartRef2.current;
+
+    return () => {
+      if (chartInstance2) {
+        chartInstance2.destroy();
+      }
+    };
+  }, [doughnutData]);
+
+
+  useEffect(() => {
+    chart();
+  }, [orderData])
+  useEffect(() => {
+    chart2();
+  }, [productData])
   useEffect(() => {
     const fetchData = async () => {
       setLoading({ user: true, order: true, product: true });
@@ -150,9 +187,6 @@ const Dashboard = () => {
   return <div>
     <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
     <div className="text-center mt-6">
-      {/* {productLoading ? <>...</> : products && <div>{products.length}</div>}
-      {userLoading ? <>...</> : users && <div>{users.length}</div>}
-      {orderLoading ? <>...</> : orders?.length > 0 ? <div>{orders.length}</div> : <>0</>} */}
       <div className="flex flex-row text-lg gap-6">
         <div className="basis-1/4 flex bg-white px-6 py-3 rounded-xl">
           <div className="flex flex-col">
@@ -202,10 +236,12 @@ const Dashboard = () => {
           </svg>
         </div>
       </div>
-      <div className="flex flex-row gap-6">
-      <div className="basis-2/3">
-      <div>overview</div>
-      <Bar
+      <div className="flex flex-row gap-6 mt-6">
+        <div className="basis-2/3 bg-white rounded-xl px-6 py-3">
+          <div className="text-lg font-bold text-left">Overview</div>
+          {
+            chartData.labels && chartData.labels.length > 0 ? (
+              <Bar
                 ref={chartRef}
                 data={chartData}
                 options={{
@@ -229,12 +265,42 @@ const Dashboard = () => {
                         text: 'Month'
                       }
                     }
+                  },
+                  borderRadius: 20
+                }}
+              />
+            ) : (
+              <p>no datâ</p>
+            )
+          }
+
+        </div>
+        <div className="basis-1/3 bg-white rounded-xl px-6 py-3">
+          <div className="text-lg font-bold text-left">Best seller</div>
+          {
+            doughnutData.labels && doughnutData.labels.length > 0 ? (
+              <Doughnut
+                ref={chartRef2}
+                data={doughnutData}
+                options={{
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: "Sold Products by Type",
+                      font: { weight: 'bold', size: 16 }
+                    },
+                    legend: {
+                      position: 'right'
+                    }
                   }
                 }}
               />
+            ) : (
+              <p>Loading...</p>
+            )
+          }
+        </div>
       </div>
-      <div className="basis-1/3">best</div>
-    </div>
     </div>
   </div>;
 };
