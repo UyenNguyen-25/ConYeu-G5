@@ -6,7 +6,7 @@ const router = Router();
 
 const orderRoutes = router;
 
-router.use(verifyJWT);
+// router.use(verifyJWT);
 router.route("/get-all-order").get(orderController.getOrderByUserPhone)
 router.route("/auto-create-order-status").post(orderController.autoCreateStatus);
 router.route("/update-order-status/:orderId").put(orderController.updateOrderStatus)
