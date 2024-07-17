@@ -4,10 +4,10 @@ import verifyJWT from "../middleware/verifyJWT";
 
 const router = Router();
 
-router.route("/get-all-brand").get(brandController.getAllBrand);
 
 router.use(verifyJWT);
 
+router.route("/get-all-brand").get(brandController.getAllBrand);
 router.route("/create-brand").post(brandController.createBrand);
 router.route("/:brandId").put(brandController.updateBrand);
 router.route("/:brandId").delete(brandController.deleteBrand);

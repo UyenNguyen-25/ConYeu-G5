@@ -3,6 +3,7 @@ import grabLogo from "./logo-grab.jpg"
 import emptyCart from "./emptyCart.png"
 import homePage from "./home-page.jpg"
 import delivery from "./delivery.jpg"
+import soldout from "./sold_out_PNG73.png"
 
 const Logo = () => {
   return (
@@ -21,6 +22,6 @@ const Logo = () => {
   );
 };
 
-export { momoLogo, grabLogo, emptyCart, homePage, delivery }
+export { momoLogo, grabLogo, emptyCart, homePage, delivery, soldout }
 
 export default Logo;

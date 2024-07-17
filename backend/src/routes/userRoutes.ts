@@ -16,6 +16,10 @@ router
 .put(userController.updateUser)
 .delete(userController.deleteUser);
 
+router
+.route('/get-all-user')
+.get(userController.getAllUser)
+
 router.get("/get-user", userController.getUserDetail)
 
 router

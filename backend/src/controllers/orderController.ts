@@ -269,7 +269,29 @@ const getOrderByUserPhone: RequestHandler = asyncHandler(async (req: any, res: a
 
 });
 
+const getOrderByMonth: RequestHandler = asyncHandler(async (req: any, res: any): Promise<any> => {
+    try {
+        const order = await Order.aggregate([
+            {
+              $group: {
+                _id: {
+                  month: { $month: "$createdAt" },
+                  year: { $year: "$createdAt" }
+                },
+                totalOrders: { $sum: 1 }
+              }
+            }
+          ]);
+          return res.status(200).json(order);
+      
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 
-const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId,getOrderByUserPhone }
+});
+
+
+const orderController = { autoCreateStatus, createOrder, getOrderStatus, updateOrderStatus, getOrderDetail, getOrderByStatusAndUserId,getOrderByUserPhone, getOrderByMonth }
 
 export default orderController;
