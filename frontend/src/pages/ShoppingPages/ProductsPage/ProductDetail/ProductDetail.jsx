@@ -5,13 +5,15 @@ import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Alert } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import ProductReviews from "../components/ProductReviews";
 import { soldout } from "@/assets/logo";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 
 const ProductDetail = () => {
+  const currentUser = useSelector(selectCurrentUser)
   const { id } = useParams();
   const [detail, setDetail] = useState();
   const [loading, setLoading] = useState(true);
@@ -121,10 +123,10 @@ const ProductDetail = () => {
                 {
                   detail.quantity > 0 ? (
                     <div className="text-xl">
-                  Kho: {detail.quantity}
-                </div>
+                      Kho: {detail.quantity}
+                    </div>
                   ) : (
-                    <img className="w-1/2" src={soldout}/>
+                    <img className="w-1/2" src={soldout} />
                   )
                 }
                 <div className="flex gap-x-10">
@@ -147,22 +149,23 @@ const ProductDetail = () => {
                     </button>
                   </div>
                 </div>
-                <div className="flex gap-x-6">
-                  <button
-                    className="bg-[#007AFB] px-9 py-3 text-xl text-white rounded-2xl hover:bg-blue-400"
-                    onClick={() => handleAddToCart(detail)} 
-                    disabled={detail.quantity === 0}
-                  >
-                    Thêm vào giỏ
-                  </button>
-                  <button
-                    className="bg-[#5B5E62] px-9 py-3 text-xl text-white rounded-2xl hover:bg-gray-500"
-                    onClick={() => handleBuyNow(detail)}
-                    disabled={detail.quantity === 0}
-                  >
-                    Mua ngay
-                  </button>
-                </div>
+                {currentUser?.user_role?.role_description !== "admin" &&
+                  <div className="flex gap-x-6">
+                    <button
+                      className="bg-[#007AFB] px-9 py-3 text-xl text-white rounded-2xl hover:bg-blue-400"
+                      onClick={() => handleAddToCart(detail)}
+                      disabled={detail.quantity === 0}
+                    >
+                      Thêm vào giỏ
+                    </button>
+                    <button
+                      className="bg-[#5B5E62] px-9 py-3 text-xl text-white rounded-2xl hover:bg-gray-500"
+                      onClick={() => handleBuyNow(detail)}
+                      disabled={detail.quantity === 0}
+                    >
+                      Mua ngay
+                    </button>
+                  </div>}
               </div>
             </div>
             <div className="flex flex-col gap-y-5">
