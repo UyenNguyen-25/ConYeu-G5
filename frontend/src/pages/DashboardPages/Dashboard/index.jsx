@@ -1,6 +1,6 @@
 import { BASE_URL } from "@/constants/apiConfig";
 import { useGetUserQuery, useGetUsersQuery } from "@/redux/features/users/usersApiSlice";
-import { Typography } from "antd";
+import { Spin, Typography } from "antd";
 import axios from "axios";
 import { ArcElement, BarElement, CategoryScale, Legend, LinearScale, LineController, LineElement, PointElement, Title, Tooltip } from "chart.js";
 import { useEffect, useRef, useState } from "react";
@@ -39,6 +39,7 @@ const Dashboard = () => {
     product: true,
     brand: true
   });
+  const [isLoading, setIsLoading] = useState(true);
   const getTypeName = (type) => {
     switch (type) {
       case "type1":
@@ -142,6 +143,7 @@ const Dashboard = () => {
   useEffect(() => {
     chart2();
   }, [productData])
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading({ user: true, order: true, product: true });
@@ -177,6 +179,7 @@ const Dashboard = () => {
       } catch (error) {
         console.error(error);
       } finally {
+        setIsLoading(false)
         setLoading({ user: false, order: false, product: false, brand: false });
       }
     };
@@ -239,7 +242,7 @@ const Dashboard = () => {
       <div className="flex flex-row gap-6 mt-6">
         <div className="basis-2/3 bg-white rounded-xl px-6 py-3">
           <div className="text-lg font-bold text-left">Overview</div>
-          {
+          {isLoading ? <div className="h-full flex justify-center items-center"><Spin /></div> :
             chartData.labels && chartData.labels.length > 0 ? (
               <Bar
                 ref={chartRef}
@@ -270,7 +273,8 @@ const Dashboard = () => {
                 }}
               />
             ) : (
-              <p>no datâ</p>
+              <p>No data</p>
+
             )
           }
 

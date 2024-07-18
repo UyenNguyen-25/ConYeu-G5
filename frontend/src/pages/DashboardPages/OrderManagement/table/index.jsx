@@ -105,10 +105,15 @@ const CustomTable = ({ list, Loading, refetch }) => {
             onFilter: (value, record) => record.payment_method === value,
         },
         {
-            title: "Date",
+            title: "Created Date",
             dataIndex: "createdAt",
             render: (value) => format(new Date(value), "d/MM/yyy h:mm a"),
             sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        }, {
+            title: "Updated Date",
+            dataIndex: "updatedAt",
+            render: (value) => format(new Date(value), "d/MM/yyy h:mm a"),
+            sorter: (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt)
         },
         {
             title: "Total Money",
@@ -141,9 +146,15 @@ const CustomTable = ({ list, Loading, refetch }) => {
                             <Typography.Link type="danger">Reject</Typography.Link>
                         </Popconfirm>
                     </div> :
-                        <Popconfirm title="Sure to confirm?" ariaValueText="cancelled" onConfirm={() => updateStatus(status, record._id)}>
-                            <Typography.Link >Confirm</Typography.Link>
-                        </Popconfirm>
+                        <div className="space-x-5">
+                            <Popconfirm title="Sure to confirm?" onConfirm={() => updateStatus(status, record._id)}>
+                                <Typography.Link >Confirm</Typography.Link>
+                            </Popconfirm>
+                            <Popconfirm title="Sure to cancel?" onConfirm={() => updateStatus("reject", record._id)}>
+                                <Typography.Link type="danger">Cancel</Typography.Link>
+                            </Popconfirm>
+                        </div>
+
             }
         },
     ];

@@ -130,7 +130,7 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
             setShippingAddress({
                 ...response.data.updatedUser.address_id,
                 updatedAddress: isDefault, // Thêm thuộc tính updatedAddress
-              });
+            });
             setIsModalVisible(false);
         } catch (error) {
             console.error('Error confirming user address:', error);
@@ -187,7 +187,7 @@ const EditAddress = ({ setShippingAddress, shippingAddress }) => {
         const province = provinces.find(prov => prov.province_name === provinceName);
         return province ? province.province_id : null;
     };
-
+    // ahihi sao code bug qua z ne
     const findTownIdByName = (townName) => {
         const town = towns.find(town => town.ward_name === townName);
         return town ? town.ward_id : null;

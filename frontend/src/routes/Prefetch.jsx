@@ -14,7 +14,6 @@ const Prefetch = ({ children }) => {
         {
             refetchOnFocus: true,
             refetchOnReconnect: true,
-            refetchOnMountOrArgChange: true
         })
 
     useEffect(() => {

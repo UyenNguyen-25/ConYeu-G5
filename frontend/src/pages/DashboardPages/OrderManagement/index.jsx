@@ -23,8 +23,9 @@ const OrderManagement = () => {
   const { data: orders, refetch, isLoading } = useGetOrdersQuery(query, {
     pollingInterval: 2000,
     skipPollingIfUnfocused: true,
-    refetchOnReconnect: true,
     refetchOnMountOrArgChange: true,
+    // refetchOnReconnect: true,
+    // refetchOnFocus: true,
   })
 
   useEffect(() => {
@@ -35,7 +36,6 @@ const OrderManagement = () => {
         ...order.order,
       }
     })
-    // console.log("initialData", initialData);
     setFilteredData(initialData)
   }, [orders])
 

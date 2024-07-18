@@ -12,6 +12,7 @@ import { Badge, Button } from "antd";
 import DropdownCustomize from "../../../common/components/dropdown";
 import Logo from "@/assets/logo";
 import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/redux/features/auth/authSlice";
 
 function Header() {
   const routes = [
@@ -19,8 +20,7 @@ function Header() {
     { title: "Sản Phẩm", path: "/products" },
     { title: "Liên hệ", path: "/contact" },
   ];
-
-  // eslint-disable-next-line no-unused-vars
+  const currentUser = useSelector(selectCurrentUser)
   const cart = useSelector((state) => state.cart);
   const pathShowSearch = ["/", "/products"];
   const currentPath = useLocation();
@@ -79,7 +79,7 @@ function Header() {
           })}
         </div>
         <div className="flex items-center gap-2 lg:gap-6 text-sm lg:text-[17px]">
-          <Badge count={countCart}>
+          {currentUser?.user_role.role_description !== "admin" && <Badge count={countCart}>
             <NavLink
               to={"/cart"}
               className=" flex items-center gap-2 relative hover:bg-[#f2f2f2] p-2 rounded-xl text-[#545454] hover:text-[#545454] lg:text-[17px]"
@@ -93,7 +93,7 @@ function Header() {
               <ShoppingCart size={21} />
               <span className="lg:inline hidden">Giỏ hàng</span>
             </NavLink>
-          </Badge>
+          </Badge>}
 
           <DropdownCustomize
             itemsProps={itemsProps}
